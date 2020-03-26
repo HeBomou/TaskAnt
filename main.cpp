@@ -2,23 +2,38 @@
 #include "TaskAnt/AntManager.h"
 #include "TaskAnt/AntTask.h"
 
-#include <cstdio>
-#include <vector>
 #include <chrono>
+#include <cstdio>
 #include <thread>
+#include <vector>
 
 class TestProc : public TaskAnt::AntTask {
+private:
+    char m_label;
+    int m_outputNum;
+
 public:
-    virtual ~TestProc() override {}
+    TestProc(char label, int outputNum)
+        : m_label(label)
+        , m_outputNum(outputNum)
+    {
+    }
+    virtual ~TestProc() override
+    {
+    }
     virtual void Run() override
     {
-        std::printf("Hello ant Task!\n");
+        for (int i = 0; i < m_outputNum; i++)
+            std::printf("Test Proc %c!\n", m_label), std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 };
 
 int main()
 {
-    TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc(), std::vector<TaskAnt::AntEvent*>());
+    auto eventA = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('A', 3), std::vector<TaskAnt::AntEvent*>());
+    auto eventB = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('B', 6), std::vector<TaskAnt::AntEvent*>());
+    auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5), std::vector<TaskAnt::AntEvent*>{ eventA });
+    auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4), std::vector<TaskAnt::AntEvent*>{ eventB, eventC });
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     return 0;
 }

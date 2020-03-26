@@ -23,7 +23,7 @@ private:
 public:
     ~AntManager();
     static AntManager* GetInstance();
-    void ScheduleTask(AntTask*, std::vector<AntEvent*>);
+    AntEvent* ScheduleTask(AntTask*, std::vector<AntEvent*>);
     AntTask* GetNextTask();
     void QueueTask(AntTask*);
 };

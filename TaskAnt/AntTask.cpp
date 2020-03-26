@@ -18,4 +18,14 @@ void AntTask::ConditionalQueueTask()
     }
 }
 
+AntEvent* AntTask::InitEvent()
+{
+    return m_event = new AntEvent();
+}
+
+void AntTask::NotifySubsequents()
+{
+    m_event->DispatchSubsequents();
+}
+
 } // namespace TaskAnt

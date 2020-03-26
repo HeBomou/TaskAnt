@@ -18,17 +18,19 @@ AntManager::AntManager()
 
 AntManager::~AntManager()
 {
-    while (!m_pTaskQueue.empty()) {
-        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+    // TODO: 目前在退出时是放弃未执行的任务，可以考虑改成完成所有的任务
+    // while (!m_pTaskQueue.empty()) {
+    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // }
     for (auto pAnt : m_pAnts)
         pAnt->Stop();
     for (auto pThread : m_pAntThreads)
         delete pThread;
-    // while(!m_pTaskQueue.empty()) {
-    //     auto pTask = m_pTaskQueue.front(); m_pTaskQueue.pop();
-    //     delete pTask;
-    // }
+    while (!m_pTaskQueue.empty()) {
+        auto pTask = m_pTaskQueue.front();
+        m_pTaskQueue.pop();
+        delete pTask;
+    }
 }
 
 AntManager* AntManager::GetInstance()
@@ -37,14 +39,19 @@ AntManager* AntManager::GetInstance()
     return &instance;
 }
 
-void AntManager::ScheduleTask(AntTask* pTask, std::vector<AntEvent*> pEvents)
+AntEvent* AntManager::ScheduleTask(AntTask* pTask, std::vector<AntEvent*> pEvents)
 {
     int inDegree = pEvents.size();
+    for (auto pE : pEvents) {
+        if (!pE->Finished())
+            pE->AddSubsequent(pTask);
+        else
+            inDegree--;
+    }
     pTask->SetInDegree(inDegree);
-    for (auto pE : pEvents)
-        pE->AddSubsequent(pTask);
     if (inDegree == 0)
         AntManager::GetInstance()->QueueTask(pTask);
+    return pTask->InitEvent();
 }
 
 AntTask* AntManager::GetNextTask()

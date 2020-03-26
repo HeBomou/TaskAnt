@@ -2,6 +2,11 @@
 
 namespace TaskAnt {
 
+bool AntEvent::Finished()
+{
+    return m_finished;
+}
+
 void AntEvent::AddSubsequent(AntTask* pTask)
 {
     m_subsequents.push_back(pTask);
@@ -9,6 +14,7 @@ void AntEvent::AddSubsequent(AntTask* pTask)
 
 void AntEvent::DispatchSubsequents()
 {
+    m_finished = true;
     for (auto task : m_subsequents)
         task->ConditionalQueueTask();
 }

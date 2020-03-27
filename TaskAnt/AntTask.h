@@ -2,6 +2,8 @@
 
 #include "AntEvent.h"
 
+#include <memory>
+
 namespace TaskAnt {
 
 class AntEvent;
@@ -9,13 +11,13 @@ class AntEvent;
 class AntTask {
 private:
     int m_inDegree = 0;
-    AntEvent *m_event;
+    std::shared_ptr<AntEvent> m_event;
 public:
     virtual ~AntTask() = 0;
     void SetInDegree(int);
     void ConditionalQueueTask();
     virtual void Run() = 0;
-    AntEvent* InitEvent();
+    std::shared_ptr<AntEvent> InitEvent();
     void NotifySubsequents();
 };
 

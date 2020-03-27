@@ -5,6 +5,7 @@
 #include "AntTask.h"
 #include "AntThread.h"
 
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <vector>
@@ -23,7 +24,7 @@ private:
 public:
     ~AntManager();
     static AntManager* GetInstance();
-    AntEvent* ScheduleTask(AntTask*, std::vector<AntEvent*>);
+    std::shared_ptr<AntEvent> ScheduleTask(AntTask*, std::vector<std::shared_ptr<AntEvent>>);
     AntTask* GetNextTask();
     void QueueTask(AntTask*);
 };

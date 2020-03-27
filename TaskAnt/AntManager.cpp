@@ -39,7 +39,7 @@ AntManager* AntManager::GetInstance()
     return &instance;
 }
 
-AntEvent* AntManager::ScheduleTask(AntTask* pTask, std::vector<AntEvent*> pEvents)
+std::shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, std::vector<std::shared_ptr<AntEvent>> pEvents)
 {
     int inDegree = pEvents.size();
     for (auto pE : pEvents) {

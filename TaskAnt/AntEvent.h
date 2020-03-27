@@ -10,7 +10,7 @@ class AntTask;
 
 class AntEvent {
 private:
-    // TODO: 考虑Event的销毁
+    // TODO: 使用智能指针销毁
     bool m_finished;
     std::vector<AntTask*> m_subsequents;
 

@@ -18,9 +18,9 @@ void AntTask::ConditionalQueueTask()
     }
 }
 
-AntEvent* AntTask::InitEvent()
+std::shared_ptr<AntEvent> AntTask::InitEvent()
 {
-    return m_event = new AntEvent();
+    return m_event = std::make_shared<AntEvent>();
 }
 
 void AntTask::NotifySubsequents()

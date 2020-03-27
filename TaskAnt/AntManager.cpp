@@ -7,7 +7,7 @@ namespace TaskAnt {
 
 AntManager::AntManager()
 {
-    int antNum = 8;
+    int antNum = 2;
     for (int i = 0; i < antNum; i++) {
         auto pAnt = new Ant();
         auto pAntThread = AntThread::Create(pAnt);
@@ -19,11 +19,9 @@ AntManager::AntManager()
 AntManager::~AntManager()
 {
     // TODO: 目前在退出时是放弃未执行的任务，可以考虑改成完成所有的任务
-    // while (!m_pTaskQueue.empty()) {
-    // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    // }
     for (auto pAnt : m_pAnts)
         pAnt->Stop();
+    m_taskQueueCv.notify_all();
     for (auto pThread : m_pAntThreads)
         delete pThread;
     while (!m_pTaskQueue.empty()) {
@@ -56,7 +54,9 @@ std::shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, std::vector<s
 
 AntTask* AntManager::GetNextTask()
 {
-    std::lock_guard<std::mutex> lock(m_taskQueueMutex);
+    std::unique_lock<std::mutex> lock(m_taskQueueMutex);
+    if (m_pTaskQueue.empty())
+        m_taskQueueCv.wait(lock);
     if (m_pTaskQueue.empty())
         return nullptr;
     auto res = m_pTaskQueue.front();
@@ -66,8 +66,9 @@ AntTask* AntManager::GetNextTask()
 
 void AntManager::QueueTask(AntTask* pTask)
 {
-    std::lock_guard<std::mutex> lock(m_taskQueueMutex);
+    std::unique_lock<std::mutex> lock(m_taskQueueMutex);
     m_pTaskQueue.push(pTask);
+    m_taskQueueCv.notify_one();
 }
 
 } // namespace TaskAnt

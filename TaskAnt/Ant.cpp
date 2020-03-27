@@ -19,7 +19,7 @@ void Ant::Run()
             pTask->Run();
             pTask->NotifySubsequents();
             delete pTask;
-        }// else std::this_thread::sleep_for(std::chrono::microseconds(100));
+        }
     }
 }
 

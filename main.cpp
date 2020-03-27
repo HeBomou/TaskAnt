@@ -34,6 +34,6 @@ int main()
     auto eventB = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('B', 6), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
     auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventA });
     auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventB, eventC });
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    getchar();
     return 0;
 }

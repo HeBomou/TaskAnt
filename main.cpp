@@ -173,10 +173,10 @@ int main()
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    // auto eventA = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('A', 3), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
-    // auto eventB = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('B', 6), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
-    // auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventA });
-    // auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventB, eventC });
+    auto eventA = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('A', 3), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
+    auto eventB = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('B', 6), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
+    auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventA });
+    auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventB, eventC });
     getchar();
     return 0;
 }

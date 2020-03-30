@@ -16,6 +16,7 @@
 
 EXE = task_ant
 SOURCES = main.cpp
+SOURCES += TaskAnt/Ant.cpp TaskAnt/AntEvent.cpp AntManager.cpp AntTask.cpp AntThread.cpp AntThreadProc.cpp UniversalPlatformAntThread.cpp
 SOURCES += libs/imgui/imgui_impl_glfw.cpp libs/imgui/imgui_impl_opengl3.cpp
 SOURCES += libs/imgui/imgui.cpp libs/imgui/imgui_demo.cpp libs/imgui/imgui_draw.cpp libs/imgui/imgui_widgets.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
@@ -81,6 +82,9 @@ endif
 ##---------------------------------------------------------------------
 
 %.o:%.cpp
+	$(CXX) $(CXXFLAGS) -std=c++17 -c -o $@ $<
+
+%.o:TaskAnt/%.cpp
 	$(CXX) $(CXXFLAGS) -std=c++17 -c -o $@ $<
 
 %.o:libs/imgui/%.cpp

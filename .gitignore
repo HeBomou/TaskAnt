@@ -1,1 +1,4 @@
-main.out.dSYM/
+*.o
+task_ant
+
+*.ini

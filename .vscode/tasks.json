@@ -8,7 +8,7 @@
             "label": "clang++ build all file",
             "command": "make",
             "args": [
-                "compile"
+                "all"
             ],
             "problemMatcher": [
                 "$gcc"

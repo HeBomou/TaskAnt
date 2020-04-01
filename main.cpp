@@ -18,11 +18,15 @@ class TestProc : public TaskAnt::AntTask {
 private:
     char m_label;
     int m_outputNum;
+    bool& m_show;
+    int& m_time;
 
 public:
-    TestProc(char label, int outputNum)
+    TestProc(char label, int outputNum, bool& show, int& time)
         : m_label(label)
         , m_outputNum(outputNum)
+        , m_show(show)
+        , m_time(time)
     {
     }
     virtual ~TestProc() override
@@ -30,8 +34,10 @@ public:
     }
     virtual void Run() override
     {
+        m_show = true;
         for (int i = 0; i < m_outputNum; i++)
-            std::printf("Test Proc %c!\n", m_label), std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            m_time++, std::printf("Test Proc %c!\n", m_label), std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        m_show = false;
     }
 };
 
@@ -85,8 +91,15 @@ int main()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // State
-    bool show_another_window = true;
+    bool runningA = false, runningB = false, runningC = false, runningD = false;
+    int timeA = 0, timeB = 0, timeC = 0, timeD = 0;
     ImVec4 clear_color = ImColor(114, 144, 154);
+
+    // Task
+    auto eventA = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('A', 3, runningA, timeA), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
+    auto eventB = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('B', 6, runningB, timeB), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
+    auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5, runningC, timeC), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventA });
+    auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4, runningD, timeD), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventB, eventC });
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -98,14 +111,25 @@ int main()
 
         ImGui::Text("HelloWorld %d", 123);
 
-        // 3. Show another simple window.
-        if (show_another_window) {
-            ImGui::Begin("Another Window", &show_another_window); // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
-        }
+        ImGui::Begin("Task A");
+        ImGui::Text("Time: %d", timeA);
+        ImGui::Text(runningA ? "Running" : "Stopped");
+        ImGui::End();
+
+        ImGui::Begin("Task B");
+        ImGui::Text("Time: %d", timeB);
+        ImGui::Text(runningB ? "Running" : "Stopped");
+        ImGui::End();
+
+        ImGui::Begin("Task C");
+        ImGui::Text("Time: %d", timeC);
+        ImGui::Text(runningC ? "Running" : "Stopped");
+        ImGui::End();
+
+        ImGui::Begin("Task D");
+        ImGui::Text("Time: %d", timeD);
+        ImGui::Text(runningD ? "Running" : "Stopped");
+        ImGui::End();
 
         // Rendering
         ImGui::Render();
@@ -127,10 +151,6 @@ int main()
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    auto eventA = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('A', 3), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
-    auto eventB = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('B', 6), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
-    auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventA });
-    auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventB, eventC });
     getchar();
     return 0;
 }

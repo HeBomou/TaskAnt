@@ -62,5 +62,8 @@
         "vector": "cpp",
         "deque": "cpp",
         "queue": "cpp"
+    },
+    "files.exclude": {
+        "*.o": true
     }
 }

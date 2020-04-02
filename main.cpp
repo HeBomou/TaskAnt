@@ -164,19 +164,22 @@ int main()
 
         // 启动任务
         if (ImGui::Button("Run tasks")) {
-            std::function<void(TaskNode*)> dfsRun;
-            dfsRun = [&dfsRun](TaskNode* p) {
+            std::function<bool(TaskNode*)> dfsRun;
+            dfsRun = [&dfsRun](TaskNode* p) -> bool {
                 if (p->m_event)
                     return;
                 std::vector<std::shared_ptr<TaskAnt::AntEvent>> deps;
                 for (auto connection : p->m_connections) {
-                    if (connection.output_node == p)
+                    auto from = (TaskNode*)connection.output_node;
+                    if (from == p)
                         continue;
-                    if (!((TaskNode*)connection.output_node)->m_event)
-                        dfsRun((TaskNode*)connection.output_node);
-                    deps.push_back(((TaskNode*)connection.output_node)->m_event);
+                    if (!from->m_event) {
+                        dfsRun(from);
+                    }
+                    deps.push_back(from->m_event);
                 }
                 p->m_event = TaskAnt::AntManager::GetInstance()->ScheduleTask(p->m_task, deps);
+                return true;
             };
             for (auto node : nodes)
                 dfsRun(node);

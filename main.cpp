@@ -35,7 +35,7 @@ struct TestTask : public TaskAnt::AntTask {
     {
         m_running = true;
         for (int i = 0; i < m_outputNum; i++)
-            m_time++, std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            m_time++, std::this_thread::sleep_for(std::chrono::milliseconds(100));
         m_running = false;
     }
 };
@@ -69,9 +69,11 @@ struct TaskNode {
     std::vector<Connection> m_connections{};
     std::vector<ImNodes::Ez::SlotInfo> m_input_slots{};
     std::vector<ImNodes::Ez::SlotInfo> m_output_slots{};
+    // 启动
+    std::shared_ptr<TaskAnt::AntEvent> m_event;
     // 任务
     TestTask* m_task;
-    int m_outputNum = 5;
+    int m_outputNum = 50;
     bool m_running = false;
     int m_time = 0;
 
@@ -148,13 +150,7 @@ int main()
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     // State
-    ImVec4 clear_color = ImColor(114, 144, 154);
-
-    // Task
-    // auto eventA = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('A', 3, runningA, timeA), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
-    // auto eventB = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('B', 6, runningB, timeB), std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
-    // auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5, runningC, timeC), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventA });
-    // auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4, runningD, timeD), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventB, eventC });
+    ImVec4 clear_color = ImColor(204, 234, 244);
 
     std::vector<TaskNode*> nodes;
 
@@ -167,9 +163,24 @@ int main()
         ImGui::NewFrame();
 
         // 启动任务
-        if (ImGui::Button("Run tasks"))
+        if (ImGui::Button("Run tasks")) {
+            std::function<void(TaskNode*)> dfsRun;
+            dfsRun = [&dfsRun](TaskNode* p) {
+                if (p->m_event)
+                    return;
+                std::vector<std::shared_ptr<TaskAnt::AntEvent>> deps;
+                for (auto connection : p->m_connections) {
+                    if (connection.output_node == p)
+                        continue;
+                    if (!((TaskNode*)connection.output_node)->m_event)
+                        dfsRun((TaskNode*)connection.output_node);
+                    deps.push_back(((TaskNode*)connection.output_node)->m_event);
+                }
+                p->m_event = TaskAnt::AntManager::GetInstance()->ScheduleTask(p->m_task, deps);
+            };
             for (auto node : nodes)
-                TaskAnt::AntManager::GetInstance()->ScheduleTask(node->m_task, std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
+                dfsRun(node);
+        }
 
         // Canvas must be created after ImGui initializes, because constructor accesses ImGui style to configure default colors.
         static ImNodes::CanvasState canvas{};
@@ -184,10 +195,10 @@ int main()
                 ImNodes::Ez::InputSlots(node->m_input_slots.data(), node->m_input_slots.size());
 
                 // Custom node content may go here
-                ImGui::PushItemWidth(200);
+                ImGui::PushItemWidth(100);
                 ImGui::Text("Time to run");
                 ImGui::InputInt("", &node->m_outputNum);
-                ImGui::Text("State: %s", node->m_running ? "Running" : "Stopped");
+                ImGui::TextColored(node->m_running ? ImColor(0, 240, 0) : ImColor(240, 0, 0), "State: %s", node->m_running ? "Running" : "Stopped");
                 ImGui::Text("Counter: %d", node->m_time);
 
                 // Render output nodes first (order is important)

@@ -184,7 +184,9 @@ int main()
                 ImNodes::Ez::InputSlots(node->m_input_slots.data(), node->m_input_slots.size());
 
                 // Custom node content may go here
-                ImGui::InputInt("ouput", &node->m_outputNum);
+                ImGui::PushItemWidth(200);
+                ImGui::Text("Time to run");
+                ImGui::InputInt("", &node->m_outputNum);
                 ImGui::Text("State: %s", node->m_running ? "Running" : "Stopped");
                 ImGui::Text("Counter: %d", node->m_time);
 

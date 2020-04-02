@@ -11,6 +11,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "ImNodesEz.h"
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -38,6 +40,64 @@ public:
         for (int i = 0; i < m_outputNum; i++)
             m_time++, std::printf("Test Proc %c!\n", m_label), std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         m_show = false;
+    }
+};
+
+/// A structure defining a connection between two slots of two nodes.
+struct Connection {
+    /// `id` that was passed to BeginNode() of input node.
+    void* input_node = nullptr;
+    /// Descriptor of input slot.
+    const char* input_slot = nullptr;
+    /// `id` that was passed to BeginNode() of output node.
+    void* output_node = nullptr;
+    /// Descriptor of output slot.
+    const char* output_slot = nullptr;
+
+    bool operator==(const Connection& other) const
+    {
+        return input_node == other.input_node && input_slot == other.input_slot && output_node == other.output_node && output_slot == other.output_slot;
+    }
+
+    bool operator!=(const Connection& other) const
+    {
+        return !operator==(other);
+    }
+};
+
+/// A structure holding node state.
+struct TaskNode {
+    /// Title which will be displayed at the center-top of the node.
+    const char* title = nullptr;
+    /// Flag indicating that node is selected by the user.
+    bool selected = false;
+    /// Node position on the canvas.
+    ImVec2 pos{};
+    /// List of node connections.
+    std::vector<Connection> connections{};
+    /// A list of input slots current node has.
+    std::vector<ImNodes::Ez::SlotInfo> input_slots{};
+    /// A list of output slots current node has.
+    std::vector<ImNodes::Ez::SlotInfo> output_slots{};
+
+    explicit TaskNode(const char* title,
+        const std::vector<ImNodes::Ez::SlotInfo>&& input_slots,
+        const std::vector<ImNodes::Ez::SlotInfo>&& output_slots)
+    {
+        this->title = title;
+        this->input_slots = input_slots;
+        this->output_slots = output_slots;
+    }
+
+    /// Deletes connection from this node.
+    void DeleteConnection(const Connection& connection)
+    {
+        for (auto it = connections.begin(); it != connections.end(); ++it) {
+            if (connection == *it) {
+                connections.erase(it);
+                break;
+            }
+        }
     }
 };
 
@@ -101,6 +161,8 @@ int main()
     auto eventC = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('C', 5, runningC, timeC), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventA });
     auto eventD = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestProc('D', 4, runningD, timeD), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ eventB, eventC });
 
+    std::vector<TaskNode*> nodes = { new TaskNode("He", {}, {}) };
+
     while (!glfwWindowShouldClose(window)) {
 
         glfwPollEvents();
@@ -111,25 +173,71 @@ int main()
 
         ImGui::Text("HelloWorld %d", 123);
 
-        ImGui::Begin("Task A");
-        ImGui::Text("Time: %d", timeA);
-        ImGui::Text(runningA ? "Running" : "Stopped");
-        ImGui::End();
+        // Canvas must be created after ImGui initializes, because constructor accesses ImGui style to configure default colors.
+        static ImNodes::CanvasState canvas{};
+        // const ImGuiStyle& style = ImGui::GetStyle();
 
-        ImGui::Begin("Task B");
-        ImGui::Text("Time: %d", timeB);
-        ImGui::Text(runningB ? "Running" : "Stopped");
-        ImGui::End();
+        ImNodes::BeginCanvas(&canvas);
+        for (auto node : nodes) {
+            // Start rendering node
+            if (ImNodes::Ez::BeginNode(node, node->title, &node->pos, &node->selected)) {
+                // Render input nodes first (order is important)
+                ImNodes::Ez::InputSlots(node->input_slots.data(), node->input_slots.size());
 
-        ImGui::Begin("Task C");
-        ImGui::Text("Time: %d", timeC);
-        ImGui::Text(runningC ? "Running" : "Stopped");
-        ImGui::End();
+                // Custom node content may go here
+                ImGui::Text("Content of %s", node->title);
 
-        ImGui::Begin("Task D");
-        ImGui::Text("Time: %d", timeD);
-        ImGui::Text(runningD ? "Running" : "Stopped");
-        ImGui::End();
+                // Render output nodes first (order is important)
+                ImNodes::Ez::OutputSlots(node->output_slots.data(), node->output_slots.size());
+
+                // Store new connections when they are created
+                Connection new_connection;
+                if (ImNodes::GetNewConnection(&new_connection.input_node, &new_connection.input_slot,
+                        &new_connection.output_node, &new_connection.output_slot)) {
+                    ((TaskNode*)new_connection.input_node)->connections.push_back(new_connection);
+                    ((TaskNode*)new_connection.output_node)->connections.push_back(new_connection);
+                }
+
+                // Render output connections of this node
+                for (const Connection& connection : node->connections) {
+                    // Node contains all it's connections (both from output and to input slots). This means that multiple
+                    // nodes will have same connection. We render only output connections and ensure that each connection
+                    // will be rendered once.
+                    if (connection.output_node != node)
+                        continue;
+
+                    if (!ImNodes::Connection(connection.input_node, connection.input_slot, connection.output_node,
+                            connection.output_slot)) {
+                        // Remove deleted connections
+                        ((TaskNode*)connection.input_node)->DeleteConnection(connection);
+                        ((TaskNode*)connection.output_node)->DeleteConnection(connection);
+                    }
+                }
+                // Node rendering is done. This call will render node background based on size of content inside node.
+                ImNodes::Ez::EndNode();
+            }
+        }
+        ImNodes::EndCanvas();
+
+        // ImGui::Begin("Task A");
+        // ImGui::Text("Time: %d", timeA);
+        // ImGui::Text(runningA ? "Running" : "Stopped");
+        // ImGui::End();
+
+        // ImGui::Begin("Task B");
+        // ImGui::Text("Time: %d", timeB);
+        // ImGui::Text(runningB ? "Running" : "Stopped");
+        // ImGui::End();
+
+        // ImGui::Begin("Task C");
+        // ImGui::Text("Time: %d", timeC);
+        // ImGui::Text(runningC ? "Running" : "Stopped");
+        // ImGui::End();
+
+        // ImGui::Begin("Task D");
+        // ImGui::Text("Time: %d", timeD);
+        // ImGui::Text(runningD ? "Running" : "Stopped");
+        // ImGui::End();
 
         // Rendering
         ImGui::Render();

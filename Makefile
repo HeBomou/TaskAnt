@@ -3,8 +3,10 @@ SOURCES = main.cpp
 SOURCES += Ant.cpp AntEvent.cpp AntManager.cpp AntTask.cpp AntThread.cpp AntThreadProc.cpp UniversalPlatformAntThread.cpp
 SOURCES += imgui_impl_glfw.cpp imgui_impl_opengl3.cpp
 SOURCES += imgui.cpp imgui_demo.cpp imgui_draw.cpp imgui_widgets.cpp
+SOURCES += ImNodes.cpp ImNodesEz.cpp
 OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 CXXFLAGS = -Ilibs/imgui/
+CXXFLAGS += -Ilibs/ImNodes/
 CXXFLAGS += -g -Wall -Wformat
 CXXFLAGS += -I/usr/local/include
 CXXFLAGS += -std=c++17
@@ -17,6 +19,8 @@ LIBS += -lglfw
 %.o:TaskAnt/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 %.o:libs/imgui/%.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+%.o:libs/ImNodes/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 all: $(EXE)
 	@echo Build complete

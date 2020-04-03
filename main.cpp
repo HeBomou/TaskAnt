@@ -146,6 +146,5 @@ int main()
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    getchar();
     return 0;
 }

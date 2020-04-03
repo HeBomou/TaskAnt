@@ -16,6 +16,7 @@ void Ant::Run()
     while (!m_killed) {
         auto pTask = AntManager::GetInstance()->GetNextTask();
         if (pTask) {
+            pTask->BeforeRun();
             pTask->Run();
             pTask->NotifySubsequents();
             delete pTask;

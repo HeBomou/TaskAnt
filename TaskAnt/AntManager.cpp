@@ -47,9 +47,10 @@ std::shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, std::vector<s
             inDegree--;
     }
     pTask->SetInDegree(inDegree);
+    auto res = pTask->InitEvent();
     if (inDegree == 0)
         AntManager::GetInstance()->QueueTask(pTask);
-    return pTask->InitEvent();
+    return res;
 }
 
 AntTask* AntManager::GetNextTask()

@@ -16,6 +16,7 @@ public:
     virtual ~AntTask() = 0;
     void SetInDegree(int);
     void ConditionalQueueTask();
+    void BeforeRun();
     virtual void Run() = 0;
     std::shared_ptr<AntEvent> InitEvent();
     void NotifySubsequents();

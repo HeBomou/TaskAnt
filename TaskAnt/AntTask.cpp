@@ -18,6 +18,11 @@ void AntTask::ConditionalQueueTask()
     }
 }
 
+void AntTask::BeforeRun()
+{
+    m_event->MarkRunning();
+}
+
 std::shared_ptr<AntEvent> AntTask::InitEvent()
 {
     return m_event = std::make_shared<AntEvent>();

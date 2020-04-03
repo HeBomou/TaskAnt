@@ -30,6 +30,7 @@ struct Connection {
 struct TaskNode {
     const char* m_title;
     bool m_selected = false;
+    int m_col;
     ImVec2 m_pos{};
     std::vector<Connection> m_deps{};
     // 事件
@@ -59,6 +60,7 @@ class AntWatcher {
 private:
     std::vector<TaskNode*> m_taskNodes;
     AntWatcher();
+    std::vector<int> m_nodeNumInCols;
 
 public:
     static AntWatcher* GetInstance();

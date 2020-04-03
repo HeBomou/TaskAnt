@@ -19,8 +19,10 @@ AntWatcher* AntWatcher::GetInstance()
 
 void AntWatcher::AddNode(const char* taskName, const std::shared_ptr<TaskAnt::AntEvent>& event, const std::vector<std::shared_ptr<TaskAnt::AntEvent>>& deps)
 {
+    const int intervalX = 350;
+    const int intervalY = 100;
     auto newNode = new TaskNode(taskName, event);
-    newNode->m_pos = ImVec2(arc4random() % 500, arc4random() % 500);
+    int col = 1;
     m_taskNodes.push_back(newNode);
     for (auto dep : deps)
         for (auto node : m_taskNodes) {
@@ -28,9 +30,15 @@ void AntWatcher::AddNode(const char* taskName, const std::shared_ptr<TaskAnt::An
                 Connection c;
                 c.input_node = newNode, c.output_node = node;
                 newNode->m_deps.push_back(c);
+                col = std::max(col, node->m_col + 1);
                 break;
             }
         }
+    if (m_nodeNumInCols.size() < col)
+        m_nodeNumInCols.emplace_back(0);
+    int row = ++m_nodeNumInCols[col - 1];
+    newNode->m_col = col;
+    newNode->m_pos = ImVec2(col * intervalX - intervalX * 0.7, row * intervalY + !(col & 1) * intervalY * 0.5);
 }
 
 void AntWatcher::ImGuiRenderTick()

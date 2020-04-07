@@ -7,14 +7,14 @@
 namespace TaskAnt {
 
 class UniversalPlatformAntThread : public AntThread {
-private:
+   private:
     std::thread m_thread;
     static void ThreadEntryPoint(UniversalPlatformAntThread* pThis);
 
-protected:
+   protected:
     virtual void CreateInternal(AntThreadProc*) override;
 
-public:
+   public:
     virtual ~UniversalPlatformAntThread() override;
     static AntThread* CreatePlatformAntThread();
     virtual void Join() override;
@@ -22,4 +22,4 @@ public:
 
 typedef UniversalPlatformAntThread PlatformAntThread;
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

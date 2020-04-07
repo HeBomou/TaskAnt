@@ -2,32 +2,22 @@
 
 namespace TaskAnt {
 
-void AntEvent::MarkRunning()
-{
-    m_running = true;
-}
+AntEvent::AntEvent() {}
 
-bool AntEvent::Running()
-{
-    return m_running;
-}
+void AntEvent::AddSubsequent(AntTask* pTask) { m_subsequents.push_back(pTask); }
 
-bool AntEvent::Finished()
-{
-    return m_finished;
-}
+void AntEvent::BeforeRun() { m_running = true; }
 
-void AntEvent::AddSubsequent(AntTask* pTask)
-{
-    m_subsequents.push_back(pTask);
-}
-
-void AntEvent::DispatchSubsequents()
-{
+void AntEvent::AfterRun() {
     m_running = false;
     m_finished = true;
-    for (auto task : m_subsequents)
-        task->ConditionalQueueTask();
+    for (auto task : m_subsequents) task->ConditionalQueueTask();
 }
 
-} // namespace TaskAnt
+bool AntEvent::Running() { return m_running; }
+
+bool AntEvent::Finished() { return m_finished; }
+
+void AntEvent::Complete() {}
+
+}  // namespace TaskAnt

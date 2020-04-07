@@ -18,7 +18,7 @@ void Ant::Run()
         if (pTask) {
             pTask->BeforeRun();
             pTask->Run();
-            pTask->NotifySubsequents();
+            pTask->AfterRun();
             delete pTask;
         }
     }

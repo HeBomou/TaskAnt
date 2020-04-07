@@ -6,11 +6,10 @@ namespace TaskAnt {
 
 AntThread::~AntThread() {}
 
-AntThread* AntThread::Create(AntThreadProc* proc)
-{
+AntThread* AntThread::Create(AntThreadProc* proc) {
     AntThread* thread = PlatformAntThread::CreatePlatformAntThread();
     thread->CreateInternal(proc);
     return thread;
 }
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

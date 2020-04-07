@@ -10,24 +10,26 @@
 #include <queue>
 #include <vector>
 
+using namespace std;
+
 namespace TaskAnt {
 
 class AntManager {
-private:
-    std::vector<Ant*> m_pAnts;
-    std::vector<AntThread*> m_pAntThreads;
-    std::condition_variable m_taskQueueCv; // TODO: Try to impl a thread safe queue or monitor
-    std::mutex m_taskQueueMutex;
-    std::queue<AntTask*> m_pTaskQueue;
+   private:
+    vector<Ant*> m_pAnts;
+    vector<AntThread*> m_pAntThreads;
+    condition_variable m_taskQueueCv;
+    mutex m_taskQueueMutex;
+    queue<AntTask*> m_pTaskQueue;
 
     AntManager();
 
-public:
+   public:
     ~AntManager();
     static AntManager* GetInstance();
-    std::shared_ptr<AntEvent> ScheduleTask(AntTask*, std::vector<std::shared_ptr<AntEvent>>);
+    shared_ptr<AntEvent> ScheduleTask(AntTask*, vector<shared_ptr<AntEvent>>);
     AntTask* GetNextTask();
     void QueueTask(AntTask*);
 };
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

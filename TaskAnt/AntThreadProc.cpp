@@ -4,4 +4,4 @@ namespace TaskAnt {
 
 AntThreadProc::~AntThreadProc() {}
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

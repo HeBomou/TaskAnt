@@ -4,15 +4,15 @@
 
 namespace TaskAnt {
 
-class Ant : public AntThreadProc{
-private:
+class Ant : public AntThreadProc {
+   private:
     bool m_killed;
 
-public:
+   public:
     Ant();
     ~Ant();
     virtual void Run() override;
     virtual void Stop() override;
 };
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

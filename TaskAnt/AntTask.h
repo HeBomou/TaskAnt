@@ -9,17 +9,18 @@ namespace TaskAnt {
 class AntEvent;
 
 class AntTask {
-private:
+   private:
     int m_inDegree = 0;
     std::shared_ptr<AntEvent> m_event;
-public:
+
+   public:
     virtual ~AntTask() = 0;
     void SetInDegree(int);
     void ConditionalQueueTask();
     void BeforeRun();
     virtual void Run() = 0;
+    void AfterRun();
     std::shared_ptr<AntEvent> InitEvent();
-    void NotifySubsequents();
 };
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

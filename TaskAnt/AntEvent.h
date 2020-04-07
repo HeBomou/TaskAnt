@@ -9,17 +9,21 @@ namespace TaskAnt {
 class AntTask;
 
 class AntEvent {
-private:
+   private:
     bool m_running;
     bool m_finished;
-    std::vector<AntTask*> m_subsequents;
+    std::vector<AntTask*> m_subsequents;  // TODO: Not thread safe
+    AntEvent();
+    void AddSubsequent(AntTask*);
+    void BeforeRun();
+    void AfterRun();
+    friend class AntTask;
+    friend class AntManager;
 
-public:
-    void MarkRunning();
+   public:
     bool Running();
     bool Finished();
-    void AddSubsequent(AntTask*);
-    void DispatchSubsequents();
+    void Complete();
 };
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

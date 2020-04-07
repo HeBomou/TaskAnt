@@ -4,6 +4,8 @@
 
 #include <memory>
 
+using namespace std;
+
 namespace TaskAnt {
 
 class AntEvent;
@@ -11,7 +13,7 @@ class AntEvent;
 class AntTask {
    private:
     int m_inDegree = 0;
-    std::shared_ptr<AntEvent> m_event;
+    shared_ptr<AntEvent> m_event;
 
    public:
     virtual ~AntTask() = 0;
@@ -20,7 +22,7 @@ class AntTask {
     void BeforeRun();
     virtual void Run() = 0;
     void AfterRun();
-    std::shared_ptr<AntEvent> InitEvent();
+    shared_ptr<AntEvent> InitEvent();
 };
 
 }  // namespace TaskAnt

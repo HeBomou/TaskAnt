@@ -92,17 +92,18 @@ GLFWwindow* InitContext()
 void ScheduleTestTasks()
 {
     // 启动若干任务
-    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(87), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
-    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(104), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
-    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(63), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
-    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(129), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event3 });
-    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(82), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event1, event2 });
-    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(43), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event2 });
-    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(35), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event5 });
-    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(49), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
-    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(79), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event4, event8 });
-    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(79), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event6 });
-    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(79), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event10, event9 });
+    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(20), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
+    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(14), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
+    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(13), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
+    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(12), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event3 });
+    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(8), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event1, event2 });
+    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(3), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event2 });
+    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(5), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event5 });
+    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(9), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{});
+    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(7), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event4, event8 });
+    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(9), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event6 });
+    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask(9), std::vector<std::shared_ptr<TaskAnt::AntEvent>>{ event10, event9 });
+    
     AntWatcher::GetInstance()->AddNode("Task 1", event1, std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
     AntWatcher::GetInstance()->AddNode("Task 2", event2, std::vector<std::shared_ptr<TaskAnt::AntEvent>>());
     AntWatcher::GetInstance()->AddNode("Task 3", event3, std::vector<std::shared_ptr<TaskAnt::AntEvent>>());

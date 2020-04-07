@@ -2,7 +2,10 @@
 
 #include "AntTask.h"
 
+#include <future>
 #include <vector>
+
+using namespace std;
 
 namespace TaskAnt {
 
@@ -13,7 +16,8 @@ class AntEvent {
     bool m_running;
     bool m_finished;
     std::vector<AntTask*> m_subsequents;  // TODO: Not thread safe
-    AntEvent();
+    promise<int> m_finishPromise;
+    future<int> m_finishFuture;
     void AddSubsequent(AntTask*);
     void BeforeRun();
     void AfterRun();
@@ -21,6 +25,7 @@ class AntEvent {
     friend class AntManager;
 
    public:
+    AntEvent();
     bool Running();
     bool Finished();
     void Complete();

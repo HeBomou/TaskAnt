@@ -63,7 +63,8 @@
         "deque": "cpp",
         "queue": "cpp",
         "__tree": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "future": "cpp"
     },
     "files.exclude": {
         "*.o": true

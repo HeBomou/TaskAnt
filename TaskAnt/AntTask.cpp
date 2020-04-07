@@ -14,7 +14,8 @@ void AntTask::ConditionalQueueTask() {
     }
 }
 
-void AntTask::BeforeRun() { m_event->BeforeRun(); }
+void AntTask::BeforeRun() { 
+    m_event->BeforeRun(); }
 
 void AntTask::AfterRun() {
     m_event->AfterRun();

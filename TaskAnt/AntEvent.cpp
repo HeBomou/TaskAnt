@@ -4,28 +4,30 @@
 
 namespace TaskAnt {
 
-void AntEvent::AddSubsequent(AntTask* pTask) { m_subsequents.push_back(pTask); }
+bool AntEvent::TryAddSubsequent(AntTask* pTask) {
+    lock_guard<mutex> lock(m_mtx);
+    if (m_runningTime) return false;
+    printf("Try add %s\n", pTask->m_name.c_str());
+    m_subsequents.push_back(pTask);
+    return true;
+}
 
 void AntEvent::BeforeRun() {
     m_startTime = clock();
 }
 
-void AntEvent::AfterRun() {
+void AntEvent::AfterRun(string name) {
+    lock_guard<mutex> lock(m_mtx);
+    printf("After run %s\n", name.c_str());
     m_runningTime = clock() - m_startTime;
-    for (auto task : m_subsequents) task->ConditionalQueueTask();
     m_finishPromise.set_value(0);
+    for (auto task : m_subsequents) task->ConditionalQueueTask();
 }
-
-AntEvent::AntEvent() : m_finishPromise(promise<int>()), m_finishFuture(m_finishPromise.get_future()), m_runningTime(0) {}
 
 time_t AntEvent::RunningTime() {
     return m_runningTime;
 }
 
-bool AntEvent::Finished() {
-    return m_runningTime != 0;
-}
-
-void AntEvent::Complete() { m_finishFuture.get(); }
+void AntEvent::Complete() { m_finishPromise.get_future().get(); }
 
 }  // namespace TaskAnt

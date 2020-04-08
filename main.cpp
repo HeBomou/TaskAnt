@@ -28,9 +28,8 @@ struct TestTask : public TaskAnt::AntTask {
     virtual void Run() override {
         for (int i = 0; i < m_outputNum; i++) {
             m_time++;
-            for (int j = 0; j < m_outputNum * 100; j++)
+            for (int j = 0; j < m_outputNum * 1000; j++)
                 m_time += sqrt(j);
-            // printf("%d\n", m_time);
         }
     }
 };
@@ -90,17 +89,17 @@ shared_ptr<TaskAnt::AntEvent> ScheduleTestTasks() {
     // 启动若干任务
     auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 1", 2), vector<shared_ptr<TaskAnt::AntEvent>>{});
     auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 4), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 3), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
-    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
-    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
-    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
-    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
-    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
-    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event10, event9});
+    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 3", 3), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    // auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 4", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
+    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 5", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2, event3});
+    // auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 6", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
+    // auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 7", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
+    // auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 8", 9), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    // auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 9", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
+    // auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 10", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
+    // auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 11", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event10, event9});
 
-    return event11;
+    return event5;
 }
 
 int main() {
@@ -110,13 +109,19 @@ int main() {
     // State
     ImVec4 clear_color = ImColor(204, 234, 244);
 
-    time_t tick = 500;
-    time_t timer = 0;
-    time_t preTime = clock();
+    long long tick = 0.3 * CLOCKS_PER_SEC;
+    long long timer = 0;
+    long long preTime = clock();
 
     while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
         // game logic
-        time_t curTime = clock();
+        long long curTime = clock();
         timer += curTime - preTime;
         preTime = curTime;
         shared_ptr<TaskAnt::AntEvent> event;
@@ -126,11 +131,8 @@ int main() {
             event = ScheduleTestTasks();
         }
 
-        glfwPollEvents();
-
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        if (event)
+            event->Complete();
 
         // 渲染依赖图
         AntWatcher::GetInstance()->ImGuiRenderTick();
@@ -145,9 +147,6 @@ int main() {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
-
-        if (event)
-            event->Complete();
     }
 
     // Cleanup

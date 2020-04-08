@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <atomic>
 #include <string>
 
 #include "AntEvent.h"
@@ -14,13 +15,15 @@ class AntEvent;
 class AntTask {
    private:
     string m_name;
-    int m_inDegree = 0;
+    atomic<int> m_inDegree;
     shared_ptr<AntEvent> m_event;
-    void SetInDegree(int);
-    shared_ptr<AntEvent> InitEvent();
+
+    shared_ptr<AntEvent> Setup(int);
+    void PrerequisitesComplete(int);
     void ConditionalQueueTask();
     void BeforeRun();
     void AfterRun();
+
     friend class AntManager;
     friend class AntEvent;
     friend class Ant;

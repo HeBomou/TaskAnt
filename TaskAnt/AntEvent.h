@@ -1,9 +1,10 @@
 #pragma once
 
-#include "AntTask.h"
-
 #include <future>
+#include <mutex>
 #include <vector>
+
+#include "AntTask.h"
 
 using namespace std;
 
@@ -13,23 +14,21 @@ class AntTask;
 
 class AntEvent {
    private:
-    vector<AntTask*> m_subsequents;  // TODO: Not thread safe
+    mutex m_mtx;
+    vector<AntTask *> m_subsequents;  // TODO: Not thread safe
     promise<int> m_finishPromise;
-    future<int> m_finishFuture;
     time_t m_startTime;
-    time_t m_runningTime;
+    time_t m_runningTime = 0;
 
-    void AddSubsequent(AntTask*);
+    bool TryAddSubsequent(AntTask *);
     void BeforeRun();
-    void AfterRun();
+    void AfterRun(string name);
 
     friend class AntManager;
     friend class AntTask;
 
    public:
-    AntEvent();
     time_t RunningTime();
-    bool Finished();
     void Complete();
 };
 

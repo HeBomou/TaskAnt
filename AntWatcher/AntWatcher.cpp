@@ -64,8 +64,8 @@ void AntWatcher::ImGuiRenderTick() {
             // 任务信息
             ImGui::PushItemWidth(40);
             time_t milliTime = node->m_event->RunningTime();
-            float time = (float)milliTime / 1000.0f;
-            ImGui::TextColored(ImColor(0, 240, 0), "Running time: %.2f", time);
+            float time = (float)milliTime / CLOCKS_PER_SEC;
+            ImGui::TextColored(ImColor(0, 240, 0), "Running time: %.4f", time);
 
             // 输出插槽
             ImNodes::Ez::OutputSlots(outputSlots.data(), outputSlots.size());

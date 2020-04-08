@@ -64,7 +64,8 @@
         "queue": "cpp",
         "__tree": "cpp",
         "map": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "__undef_macros": "cpp"
     },
     "files.exclude": {
         "*.o": true

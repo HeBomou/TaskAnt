@@ -5,7 +5,7 @@
 namespace TaskAnt {
 
 AntManager::AntManager() {
-    int antNum = 4;
+    int antNum = 2;
     for (int i = 0; i < antNum; i++) {
         auto pAnt = new Ant();
         auto pAntThread = AntThread::Create(pAnt);
@@ -25,6 +25,7 @@ AntTask* AntManager::GetNextTask() {
 
 void AntManager::QueueTask(AntTask* pTask) {
     unique_lock<mutex> lock(m_taskQueueMutex);
+    printf("Queue %s\n", pTask->m_name.c_str());
     m_pTaskQueue.push(pTask);
     m_taskQueueCv.notify_one();
 }
@@ -47,21 +48,18 @@ AntManager* AntManager::GetInstance() {
 }
 
 void AntManager::StartTick() {
+    printf("Tick!\n");
     AntWatcher::GetInstance()->NextTick();
 }
 
 shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, vector<shared_ptr<AntEvent>> pEvents) {
-    int inDegree = pEvents.size();
-    for (auto pE : pEvents) {
-        if (!pE->Finished())
-            pE->AddSubsequent(pTask);
-        else
-            inDegree--;
-    }
-    pTask->SetInDegree(inDegree);
-    auto res = pTask->InitEvent();
+    auto res = pTask->Setup(pEvents.size() + 1);  // 加一为了锁住任务
+    int alreadyFinished = 0;
+    for (auto pE : pEvents)
+        alreadyFinished += pE->TryAddSubsequent(pTask) ? 0 : 1;
     AntWatcher::GetInstance()->AddNode(pTask->GetName(), res, pEvents);
-    if (inDegree == 0) AntManager::GetInstance()->QueueTask(pTask);
+
+    pTask->PrerequisitesComplete(alreadyFinished);
     return res;
 }
 

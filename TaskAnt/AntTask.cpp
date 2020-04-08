@@ -4,10 +4,14 @@
 
 namespace TaskAnt {
 
-void AntTask::SetInDegree(int inDegree) { m_inDegree = inDegree; }
-
-shared_ptr<AntEvent> AntTask::InitEvent() {
+shared_ptr<AntEvent> AntTask::Setup(int inDegree) {
+    m_inDegree = inDegree;
     return m_event = make_shared<AntEvent>();
+}
+
+void AntTask::PrerequisitesComplete(int alreadyFinished) {
+    if ((m_inDegree -= (alreadyFinished + 1)) == 0)
+        AntManager::GetInstance()->QueueTask(this);
 }
 
 void AntTask::ConditionalQueueTask() {
@@ -17,7 +21,7 @@ void AntTask::ConditionalQueueTask() {
 
 void AntTask::BeforeRun() { m_event->BeforeRun(); }
 
-void AntTask::AfterRun() { m_event->AfterRun(); }
+void AntTask::AfterRun() { m_event->AfterRun(m_name); }
 
 AntTask::AntTask(const string& name) : m_name(name) {}
 

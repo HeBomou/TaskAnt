@@ -26,8 +26,12 @@ struct TestTask : public TaskAnt::AntTask {
     TestTask(string name, const int& outputNum) : AntTask(name), m_outputNum(outputNum) {}
     virtual ~TestTask() override {}
     virtual void Run() override {
-        for (int i = 0; i < m_outputNum; i++)
-            m_time++, this_thread::sleep_for(chrono::milliseconds(2));
+        for (int i = 0; i < m_outputNum; i++) {
+            m_time++;
+            for (int j = 0; j < m_outputNum * 100; j++)
+                m_time += sqrt(j);
+            // printf("%d\n", m_time);
+        }
     }
 };
 
@@ -81,13 +85,13 @@ GLFWwindow* InitContext() {
     return window;
 }
 
-void ScheduleTestTasks() {
+shared_ptr<TaskAnt::AntEvent> ScheduleTestTasks() {
     TaskAnt::AntManager::GetInstance()->StartTick();
     // 启动若干任务
-    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 1", 20), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 14), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 13), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 12), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
+    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 1", 2), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 4), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 3), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
     auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
     auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
     auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
@@ -95,7 +99,8 @@ void ScheduleTestTasks() {
     auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
     auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
     auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event10, event9});
-    event11->Complete();
+
+    return event11;
 }
 
 int main() {
@@ -114,10 +119,11 @@ int main() {
         time_t curTime = clock();
         timer += curTime - preTime;
         preTime = curTime;
+        shared_ptr<TaskAnt::AntEvent> event;
         if (timer >= tick) {
             // Fixed update
             timer -= tick;
-            ScheduleTestTasks();
+            event = ScheduleTestTasks();
         }
 
         glfwPollEvents();
@@ -139,6 +145,9 @@ int main() {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         glfwSwapBuffers(window);
+
+        if (event)
+            event->Complete();
     }
 
     // Cleanup

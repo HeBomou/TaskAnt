@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Ant.h"
-#include "AntEvent.h"
-#include "AntTask.h"
-#include "AntThread.h"
-
 #include <memory>
 #include <mutex>
 #include <queue>
 #include <vector>
+
+#include "Ant.h"
+#include "AntEvent.h"
+#include "AntTask.h"
+#include "AntThread.h"
 
 using namespace std;
 
@@ -21,16 +21,18 @@ class AntManager {
     condition_variable m_taskQueueCv;
     mutex m_taskQueueMutex;
     queue<AntTask*> m_pTaskQueue;
-    AntTask* GetNextTask();
-    void QueueTask(AntTask*);
-    friend class Ant;
-    friend class AntTask;
 
     AntManager();
+    AntTask* GetNextTask();
+    void QueueTask(AntTask*);
+
+    friend class Ant;
+    friend class AntTask;
 
    public:
     ~AntManager();
     static AntManager* GetInstance();
+    void StartTick();
     shared_ptr<AntEvent> ScheduleTask(AntTask*, vector<shared_ptr<AntEvent>>);
 };
 

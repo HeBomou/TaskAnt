@@ -27,7 +27,7 @@ struct TestTask : public TaskAnt::AntTask {
     virtual ~TestTask() override {}
     virtual void Run() override {
         for (int i = 0; i < m_outputNum; i++)
-            m_time++, this_thread::sleep_for(chrono::milliseconds(100));
+            m_time++, this_thread::sleep_for(chrono::milliseconds(5));
     }
 };
 
@@ -107,8 +107,6 @@ int main() {
     float timer = 0;
     time_t preTime = clock();
 
-    ScheduleTestTasks();
-
     while (!glfwWindowShouldClose(window)) {
         // game logic
         time_t curTime = clock();
@@ -117,6 +115,7 @@ int main() {
         if (timer >= tick) {
             // Fixed update
             timer -= tick;
+            ScheduleTestTasks();
         }
 
         glfwPollEvents();

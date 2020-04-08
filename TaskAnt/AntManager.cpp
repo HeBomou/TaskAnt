@@ -14,6 +14,21 @@ AntManager::AntManager() {
     }
 }
 
+AntTask* AntManager::GetNextTask() {
+    unique_lock<mutex> lock(m_taskQueueMutex);
+    if (m_pTaskQueue.empty()) m_taskQueueCv.wait(lock);
+    if (m_pTaskQueue.empty()) return nullptr;
+    auto res = m_pTaskQueue.front();
+    m_pTaskQueue.pop();
+    return res;
+}
+
+void AntManager::QueueTask(AntTask* pTask) {
+    unique_lock<mutex> lock(m_taskQueueMutex);
+    m_pTaskQueue.push(pTask);
+    m_taskQueueCv.notify_one();
+}
+
 AntManager::~AntManager() {
     // TODO: 目前在退出时是放弃未执行的任务，可以考虑改成完成所有的任务
     for (auto pAnt : m_pAnts) pAnt->Stop();
@@ -31,6 +46,10 @@ AntManager* AntManager::GetInstance() {
     return &instance;
 }
 
+void StartTick() {
+    AntWatcher::GetInstance()->Clean();
+}
+
 shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, vector<shared_ptr<AntEvent>> pEvents) {
     int inDegree = pEvents.size();
     for (auto pE : pEvents) {
@@ -44,21 +63,6 @@ shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, vector<shared_ptr<
     AntWatcher::GetInstance()->AddNode(pTask->GetName(), res, pEvents);
     if (inDegree == 0) AntManager::GetInstance()->QueueTask(pTask);
     return res;
-}
-
-AntTask* AntManager::GetNextTask() {
-    unique_lock<mutex> lock(m_taskQueueMutex);
-    if (m_pTaskQueue.empty()) m_taskQueueCv.wait(lock);
-    if (m_pTaskQueue.empty()) return nullptr;
-    auto res = m_pTaskQueue.front();
-    m_pTaskQueue.pop();
-    return res;
-}
-
-void AntManager::QueueTask(AntTask* pTask) {
-    unique_lock<mutex> lock(m_taskQueueMutex);
-    m_pTaskQueue.push(pTask);
-    m_taskQueueCv.notify_one();
 }
 
 }  // namespace TaskAnt

@@ -1,24 +1,27 @@
 #include "AntWatcher.h"
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-AntWatcher::AntWatcher()
-{
+AntWatcher::AntWatcher() {
 }
 
-AntWatcher* AntWatcher::GetInstance()
-{
+AntWatcher* AntWatcher::GetInstance() {
     static AntWatcher instance;
     return &instance;
 }
 
-void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEvent>& event, const vector<shared_ptr<TaskAnt::AntEvent>>& deps)
-{
+void AntWatcher::Clean() {
+    for(auto node : m_taskNodes)
+        delete node;
+    m_taskNodes.clear();
+    m_nodeNumInCols.clear();
+}
+
+void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEvent>& event, const vector<shared_ptr<TaskAnt::AntEvent>>& deps) {
     const int intervalX = 350;
     const int intervalY = 100;
     auto newNode = new TaskNode(taskName, event);
@@ -41,11 +44,10 @@ void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEv
     newNode->m_pos = ImVec2(col * intervalX - intervalX * 0.7, row * intervalY + !(col & 1) * intervalY * 0.5);
 }
 
-void AntWatcher::ImGuiRenderTick()
-{
+void AntWatcher::ImGuiRenderTick() {
     static ImNodes::CanvasState canvas{};
-    static vector<ImNodes::Ez::SlotInfo> inputSlots{ { "Deps", 1 } };
-    static vector<ImNodes::Ez::SlotInfo> outputSlots{ { "Event", 1 } };
+    static vector<ImNodes::Ez::SlotInfo> inputSlots{{"Deps", 1}};
+    static vector<ImNodes::Ez::SlotInfo> outputSlots{{"Event", 1}};
 
     ImNodes::BeginCanvas(&canvas);
 
@@ -67,7 +69,7 @@ void AntWatcher::ImGuiRenderTick()
             // 绘制边
             for (const Connection& connection : node->m_deps) {
                 if (!ImNodes::Connection(connection.input_node, "Deps", connection.output_node,
-                        "Event")) {
+                                         "Event")) {
                     // Remove deleted connections
                     connection.input_node->DeleteConnection(connection);
                 }

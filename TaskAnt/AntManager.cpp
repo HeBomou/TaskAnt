@@ -46,7 +46,7 @@ AntManager* AntManager::GetInstance() {
     return &instance;
 }
 
-void StartTick() {
+void AntManager::StartTick() {
     AntWatcher::GetInstance()->Clean();
 }
 

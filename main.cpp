@@ -82,6 +82,7 @@ GLFWwindow* InitContext() {
 }
 
 void ScheduleTestTasks() {
+    TaskAnt::AntManager::GetInstance()->StartTick();
     // 启动若干任务
     auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 1", 20), vector<shared_ptr<TaskAnt::AntEvent>>{});
     auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 14), vector<shared_ptr<TaskAnt::AntEvent>>{});

@@ -15,7 +15,7 @@ class AntTask;
 class AntEvent {
    private:
     mutex m_mtx;
-    vector<AntTask *> m_subsequents;  // TODO: Not thread safe
+    vector<AntTask *> m_subsequents; // TODO: Lockfree
     promise<int> m_finishPromise;
     time_t m_startTime;
     time_t m_runningTime = 0;

@@ -5,7 +5,7 @@
 namespace TaskAnt {
 
 AntManager::AntManager() {
-    int antNum = 2;
+    int antNum = 1;
     for (int i = 0; i < antNum; i++) {
         auto pAnt = new Ant();
         auto pAntThread = AntThread::Create(pAnt);

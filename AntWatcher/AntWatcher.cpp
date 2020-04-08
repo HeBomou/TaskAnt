@@ -57,7 +57,7 @@ void AntWatcher::ImGuiRenderTick() {
 
     for (auto it = m_preTaskNodes.begin(); it != m_preTaskNodes.end();) {
         auto node = *it;
-        if (ImNodes::Ez::BeginNode(node, "node->m_title.c_str()", &node->m_pos, &node->m_selected)) {
+        if (ImNodes::Ez::BeginNode(node, node->m_title.c_str(), &node->m_pos, &node->m_selected)) {
             // 输入插槽
             ImNodes::Ez::InputSlots(inputSlots.data(), inputSlots.size());
 

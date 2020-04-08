@@ -52,8 +52,7 @@ GLFWwindow* InitContext() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
 
     // Create window with graphics context
-    GLFWwindow* window =
-        glfwCreateWindow(1280, 720, "Task Ant Test", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Task Ant Test", NULL, NULL);
     if (window == NULL) return NULL;
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);  // Enable vsync
@@ -90,26 +89,27 @@ shared_ptr<TaskAnt::AntEvent> ScheduleTestTasks() {
     auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 1", 2), vector<shared_ptr<TaskAnt::AntEvent>>{});
     auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 4), vector<shared_ptr<TaskAnt::AntEvent>>{});
     auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 3", 3), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    // auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 4", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
-    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 5", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2, event3});
-    // auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 6", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
-    // auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 7", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
-    // auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 8", 9), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    // auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 9", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
-    // auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 10", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
-    // auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 11", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event10, event9});
+    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 4", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
+    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 5", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
+    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 6", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
+    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 7", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
+    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 8", 9), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 9", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
+    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 10", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
+    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 11", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event5, event6, event7, event9, event10});
 
-    return event5;
+    return event11;
 }
 
 int main() {
+    TaskAnt::AntManager::GetInstance(); // Init AntManager
     GLFWwindow* window = InitContext();
     if (!window) return 1;
 
     // State
     ImVec4 clear_color = ImColor(204, 234, 244);
 
-    long long tick = 0.3 * CLOCKS_PER_SEC;
+    long long tick = 0.05 * CLOCKS_PER_SEC;
     long long timer = 0;
     long long preTime = clock();
 

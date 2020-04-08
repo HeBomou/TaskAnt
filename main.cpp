@@ -27,7 +27,7 @@ struct TestTask : public TaskAnt::AntTask {
     virtual ~TestTask() override {}
     virtual void Run() override {
         for (int i = 0; i < m_outputNum; i++)
-            m_time++, this_thread::sleep_for(chrono::milliseconds(5));
+            m_time++, this_thread::sleep_for(chrono::milliseconds(2));
     }
 };
 
@@ -95,6 +95,7 @@ void ScheduleTestTasks() {
     auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
     auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
     auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event10, event9});
+    event11->Complete();
 }
 
 int main() {
@@ -104,8 +105,8 @@ int main() {
     // State
     ImVec4 clear_color = ImColor(204, 234, 244);
 
-    float tick = 0.3f;
-    float timer = 0;
+    time_t tick = 500;
+    time_t timer = 0;
     time_t preTime = clock();
 
     while (!glfwWindowShouldClose(window)) {

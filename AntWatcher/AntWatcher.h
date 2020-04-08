@@ -53,13 +53,14 @@ struct TaskNode {
 class AntWatcher {
    private:
     vector<TaskNode*> m_taskNodes;
+    vector<TaskNode*> m_preTaskNodes;
     vector<int> m_nodeNumInCols;
 
     AntWatcher();
 
    public:
     static AntWatcher* GetInstance();
-    void Clean();
+    void NextTick();
     void AddNode(const string&, const shared_ptr<TaskAnt::AntEvent>&, const vector<shared_ptr<TaskAnt::AntEvent>>&);
     void ImGuiRenderTick();
 };

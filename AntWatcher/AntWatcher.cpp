@@ -15,10 +15,13 @@ AntWatcher* AntWatcher::GetInstance() {
     return &instance;
 }
 
-void AntWatcher::Clean() {
-    for (auto node : m_taskNodes)
+void AntWatcher::NextTick() {
+    for (auto node : m_preTaskNodes)
         delete node;
+    m_preTaskNodes.clear();
+    m_preTaskNodes = m_taskNodes;
     m_taskNodes.clear();
+
     m_nodeNumInCols.clear();
 }
 
@@ -52,17 +55,17 @@ void AntWatcher::ImGuiRenderTick() {
 
     ImNodes::BeginCanvas(&canvas);
 
-    for (auto it = m_taskNodes.begin(); it != m_taskNodes.end();) {
+    for (auto it = m_preTaskNodes.begin(); it != m_preTaskNodes.end();) {
         auto node = *it;
-        if (ImNodes::Ez::BeginNode(node, node->m_title.c_str(), &node->m_pos, &node->m_selected)) {
+        if (ImNodes::Ez::BeginNode(node, "node->m_title.c_str()", &node->m_pos, &node->m_selected)) {
             // 输入插槽
             ImNodes::Ez::InputSlots(inputSlots.data(), inputSlots.size());
 
             // 任务信息
             ImGui::PushItemWidth(40);
-            bool running = node->m_event->Running();
-            bool finished = node->m_event->Finished();
-            ImGui::TextColored(finished ? ImColor(150, 150, 150) : running ? ImColor(0, 240, 0) : ImColor(240, 0, 0), finished ? "Finished" : running ? "Running" : "Waiting");
+            time_t milliTime = node->m_event->RunningTime();
+            float time = (float)milliTime / 1000.0f;
+            ImGui::TextColored(ImColor(0, 240, 0), "Running time: %.2f", time);
 
             // 输出插槽
             ImNodes::Ez::OutputSlots(outputSlots.data(), outputSlots.size());

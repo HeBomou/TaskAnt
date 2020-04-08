@@ -13,20 +13,22 @@ class AntTask;
 
 class AntEvent {
    private:
-    bool m_running;
-    bool m_finished;
-    std::vector<AntTask*> m_subsequents;  // TODO: Not thread safe
+    vector<AntTask*> m_subsequents;  // TODO: Not thread safe
     promise<int> m_finishPromise;
     future<int> m_finishFuture;
+    time_t m_startTime;
+    time_t m_runningTime;
+
     void AddSubsequent(AntTask*);
     void BeforeRun();
     void AfterRun();
+
     friend class AntManager;
     friend class AntTask;
 
    public:
     AntEvent();
-    bool Running();
+    time_t RunningTime();
     bool Finished();
     void Complete();
 };

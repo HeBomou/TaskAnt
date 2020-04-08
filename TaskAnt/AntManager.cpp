@@ -47,7 +47,7 @@ AntManager* AntManager::GetInstance() {
 }
 
 void AntManager::StartTick() {
-    AntWatcher::GetInstance()->Clean();
+    AntWatcher::GetInstance()->NextTick();
 }
 
 shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, vector<shared_ptr<AntEvent>> pEvents) {

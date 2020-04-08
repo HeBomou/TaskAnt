@@ -29,7 +29,7 @@ class AntTask {
     virtual void Run() = 0;
 
    public:
-    AntTask(string name);
+    AntTask(const string& name);
     virtual ~AntTask() = 0;
     const string& GetName() const;
 };

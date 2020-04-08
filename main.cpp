@@ -93,17 +93,6 @@ void ScheduleTestTasks() {
     auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
     auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
     auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event10, event9});
-
-    // AntWatcher::GetInstance()->AddNode("Task 2", event2, vector<shared_ptr<TaskAnt::AntEvent>>());
-    // AntWatcher::GetInstance()->AddNode("Task 3", event3, vector<shared_ptr<TaskAnt::AntEvent>>());
-    // AntWatcher::GetInstance()->AddNode("Task 4", event4, vector<shared_ptr<TaskAnt::AntEvent>>{event3});
-    // AntWatcher::GetInstance()->AddNode("Task 5", event5, vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
-    // AntWatcher::GetInstance()->AddNode("Task 6", event6, vector<shared_ptr<TaskAnt::AntEvent>>{event2});
-    // AntWatcher::GetInstance()->AddNode("Task 7", event7, vector<shared_ptr<TaskAnt::AntEvent>>{event5});
-    // AntWatcher::GetInstance()->AddNode("Task 8", event8, vector<shared_ptr<TaskAnt::AntEvent>>{});
-    // AntWatcher::GetInstance()->AddNode("Task 9", event9, vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
-    // AntWatcher::GetInstance()->AddNode("Task 10", event10, vector<shared_ptr<TaskAnt::AntEvent>>{event6});
-    // AntWatcher::GetInstance()->AddNode("Task 11", event11, vector<shared_ptr<TaskAnt::AntEvent>>{event10, event9});
 }
 
 int main() {

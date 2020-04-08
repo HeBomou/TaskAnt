@@ -19,7 +19,7 @@ void AntTask::BeforeRun() { m_event->BeforeRun(); }
 
 void AntTask::AfterRun() { m_event->AfterRun(); }
 
-AntTask::AntTask(string name) : m_name(name) {}
+AntTask::AntTask(const string& name) : m_name(name) {}
 
 AntTask::~AntTask() {}
 

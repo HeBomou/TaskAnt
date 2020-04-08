@@ -21,8 +21,8 @@ class AntEvent {
     void AddSubsequent(AntTask*);
     void BeforeRun();
     void AfterRun();
-    friend class AntTask;
     friend class AntManager;
+    friend class AntTask;
 
    public:
     AntEvent();

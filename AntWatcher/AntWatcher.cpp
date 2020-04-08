@@ -17,7 +17,7 @@ AntWatcher* AntWatcher::GetInstance()
     return &instance;
 }
 
-void AntWatcher::AddNode(const char* taskName, const std::shared_ptr<TaskAnt::AntEvent>& event, const std::vector<std::shared_ptr<TaskAnt::AntEvent>>& deps)
+void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEvent>& event, const vector<shared_ptr<TaskAnt::AntEvent>>& deps)
 {
     const int intervalX = 350;
     const int intervalY = 100;
@@ -30,7 +30,7 @@ void AntWatcher::AddNode(const char* taskName, const std::shared_ptr<TaskAnt::An
                 Connection c;
                 c.input_node = newNode, c.output_node = node;
                 newNode->m_deps.push_back(c);
-                col = std::max(col, node->m_col + 1);
+                col = max(col, node->m_col + 1);
                 break;
             }
         }
@@ -44,14 +44,14 @@ void AntWatcher::AddNode(const char* taskName, const std::shared_ptr<TaskAnt::An
 void AntWatcher::ImGuiRenderTick()
 {
     static ImNodes::CanvasState canvas{};
-    static std::vector<ImNodes::Ez::SlotInfo> inputSlots{ { "Deps", 1 } };
-    static std::vector<ImNodes::Ez::SlotInfo> outputSlots{ { "Event", 1 } };
+    static vector<ImNodes::Ez::SlotInfo> inputSlots{ { "Deps", 1 } };
+    static vector<ImNodes::Ez::SlotInfo> outputSlots{ { "Event", 1 } };
 
     ImNodes::BeginCanvas(&canvas);
 
     for (auto it = m_taskNodes.begin(); it != m_taskNodes.end();) {
         auto node = *it;
-        if (ImNodes::Ez::BeginNode(node, node->m_title, &node->m_pos, &node->m_selected)) {
+        if (ImNodes::Ez::BeginNode(node, node->m_title.c_str(), &node->m_pos, &node->m_selected)) {
             // 输入插槽
             ImNodes::Ez::InputSlots(inputSlots.data(), inputSlots.size());
 

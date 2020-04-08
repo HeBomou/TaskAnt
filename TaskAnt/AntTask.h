@@ -1,8 +1,9 @@
 #pragma once
 
-#include "AntEvent.h"
-
 #include <memory>
+#include <string>
+
+#include "AntEvent.h"
 
 using namespace std;
 
@@ -12,17 +13,25 @@ class AntEvent;
 
 class AntTask {
    private:
+    string m_name;
     int m_inDegree = 0;
     shared_ptr<AntEvent> m_event;
-
-   public:
-    virtual ~AntTask() = 0;
     void SetInDegree(int);
+    shared_ptr<AntEvent> InitEvent();
     void ConditionalQueueTask();
     void BeforeRun();
-    virtual void Run() = 0;
     void AfterRun();
-    shared_ptr<AntEvent> InitEvent();
+    friend class AntManager;
+    friend class AntEvent;
+    friend class Ant;
+
+   protected:
+    virtual void Run() = 0;
+
+   public:
+    AntTask(string name);
+    virtual ~AntTask() = 0;
+    const string& GetName() const;
 };
 
 }  // namespace TaskAnt

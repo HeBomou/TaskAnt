@@ -1,7 +1,6 @@
 #include "AntManager.h"
 
-// #include <chrono>
-// #include <thread>
+#include "../AntWatcher/AntWatcher.h"
 
 namespace TaskAnt {
 
@@ -32,8 +31,7 @@ AntManager* AntManager::GetInstance() {
     return &instance;
 }
 
-shared_ptr<AntEvent> AntManager::ScheduleTask(
-    AntTask* pTask, vector<shared_ptr<AntEvent>> pEvents) {
+shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, vector<shared_ptr<AntEvent>> pEvents) {
     int inDegree = pEvents.size();
     for (auto pE : pEvents) {
         if (!pE->Finished())
@@ -43,6 +41,7 @@ shared_ptr<AntEvent> AntManager::ScheduleTask(
     }
     pTask->SetInDegree(inDegree);
     auto res = pTask->InitEvent();
+    AntWatcher::GetInstance()->AddNode(pTask->GetName(), res, pEvents);
     if (inDegree == 0) AntManager::GetInstance()->QueueTask(pTask);
     return res;
 }

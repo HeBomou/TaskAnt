@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <time.h>
 
 #include <chrono>
 #include <cstdio>
@@ -102,9 +103,22 @@ int main() {
     // State
     ImVec4 clear_color = ImColor(204, 234, 244);
 
+    float tick = 0.3f;
+    float timer = 0;
+    time_t preTime = clock();
+
     ScheduleTestTasks();
 
     while (!glfwWindowShouldClose(window)) {
+        // game logic
+        time_t curTime = clock();
+        timer += curTime - preTime;
+        preTime = curTime;
+        if (timer >= tick) {
+            // Fixed update
+            timer -= tick;
+        }
+
         glfwPollEvents();
 
         ImGui_ImplOpenGL3_NewFrame();

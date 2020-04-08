@@ -21,6 +21,10 @@ class AntManager {
     condition_variable m_taskQueueCv;
     mutex m_taskQueueMutex;
     queue<AntTask*> m_pTaskQueue;
+    AntTask* GetNextTask();
+    void QueueTask(AntTask*);
+    friend class Ant;
+    friend class AntTask;
 
     AntManager();
 
@@ -28,8 +32,6 @@ class AntManager {
     ~AntManager();
     static AntManager* GetInstance();
     shared_ptr<AntEvent> ScheduleTask(AntTask*, vector<shared_ptr<AntEvent>>);
-    AntTask* GetNextTask();
-    void QueueTask(AntTask*);
 };
 
 }  // namespace TaskAnt

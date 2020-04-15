@@ -25,7 +25,6 @@ AntTask* AntManager::GetNextTask() {
 
 void AntManager::QueueTask(AntTask* pTask) {
     unique_lock<mutex> lock(m_taskQueueMutex);
-    printf("Queue %s\n", pTask->m_name.c_str());
     m_pTaskQueue.push(pTask);
     m_taskQueueCv.notify_one();
 }

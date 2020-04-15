@@ -53,8 +53,7 @@ struct TaskNode {
 
 class AntWatcher {
    private:
-    list<pair<int, vector<TaskNode*>>> m_taskNodeQueue;
-    vector<int> m_nodeNumInCols;
+    list<tuple<int, vector<int>, vector<TaskNode*>>> m_taskStateQueue;
 
     AntWatcher();
 

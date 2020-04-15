@@ -18,9 +18,10 @@ AntWatcher* AntWatcher::GetInstance() {
 
 void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEvent>& event, const vector<shared_ptr<TaskAnt::AntEvent>>& deps) {
     // TODO: 无等待，但是AddNode只能在主线程
-    if (m_taskNodeQueue.back().first != g_frameNum)
-        m_taskNodeQueue.emplace_back(make_pair(g_frameNum, vector<TaskNode*>()));
-    auto& taskNodes = m_taskNodeQueue.back().second;
+    if (get<0>(m_taskStateQueue.back()) != g_frameNum)
+        m_taskStateQueue.emplace_back(make_tuple(g_frameNum, vector<int>(), vector<TaskNode*>()));
+    auto& taskNodes = get<2>(m_taskStateQueue.back());
+    auto& nodeNumInCols = get<1>(m_taskStateQueue.back());
     const int intervalX = 350;
     const int intervalY = 100;
     auto newNode = new TaskNode(taskName, event);
@@ -36,9 +37,9 @@ void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEv
                 break;
             }
         }
-    if (m_nodeNumInCols.size() < col)
-        m_nodeNumInCols.emplace_back(0);
-    int row = ++m_nodeNumInCols[col - 1];
+    if (nodeNumInCols.size() < col)
+        nodeNumInCols.emplace_back(0);
+    int row = ++nodeNumInCols[col - 1];
     newNode->m_col = col;
     newNode->m_pos = ImVec2(col * intervalX - intervalX * 0.7, row * intervalY + !(col & 1) * intervalY * 0.5);
 }
@@ -51,8 +52,8 @@ void AntWatcher::ImGuiRenderTick() {
     ImNodes::BeginCanvas(&canvas);
 
     // 无等待，其他线程在队尾加，渲染线程画队首
-    if (m_taskNodeQueue.size() >= 4)
-        for (auto it = m_taskNodeQueue.front().second.begin(); it != m_taskNodeQueue.front().second.end();) {
+    if (m_taskStateQueue.size() >= 4)
+        for (auto it = get<2>(m_taskStateQueue.front()).begin(); it != get<2>(m_taskStateQueue.front()).end();) {
             auto node = *it;
             if (ImNodes::Ez::BeginNode(node, node->m_title.c_str(), &node->m_pos, &node->m_selected)) {
                 // 输入插槽
@@ -81,7 +82,7 @@ void AntWatcher::ImGuiRenderTick() {
             it++;
         }
     // 让渲染固定慢几帧
-    while (m_taskNodeQueue.size() > 4) m_taskNodeQueue.pop_front();
+    while (m_taskStateQueue.size() > 4) m_taskStateQueue.pop_front();
 
     ImNodes::EndCanvas();
 }

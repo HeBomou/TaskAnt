@@ -1,5 +1,6 @@
 #include <ImNodesEz.h>
 
+#include <list>
 #include <memory>
 #include <vector>
 
@@ -52,15 +53,13 @@ struct TaskNode {
 
 class AntWatcher {
    private:
-    vector<TaskNode*> m_taskNodes;
-    vector<TaskNode*> m_preTaskNodes;
+    list<pair<int, vector<TaskNode*>>> m_taskNodeQueue;
     vector<int> m_nodeNumInCols;
 
     AntWatcher();
 
    public:
     static AntWatcher* GetInstance();
-    void NextTick();
     void AddNode(const string&, const shared_ptr<TaskAnt::AntEvent>&, const vector<shared_ptr<TaskAnt::AntEvent>>&);
     void ImGuiRenderTick();
 };

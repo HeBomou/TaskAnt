@@ -1,5 +1,5 @@
 EXE = task_ant
-SOURCES = main.cpp
+SOURCES = main.cpp game.cpp
 SOURCES += AntWatcher.cpp
 SOURCES += Ant.cpp AntEvent.cpp AntManager.cpp AntTask.cpp AntThread.cpp AntThreadProc.cpp UniversalPlatformAntThread.cpp
 SOURCES += imgui_impl_glfw.cpp imgui_impl_opengl3.cpp

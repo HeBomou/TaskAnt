@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "../game.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -15,24 +16,18 @@ AntWatcher* AntWatcher::GetInstance() {
     return &instance;
 }
 
-void AntWatcher::NextTick() {
-    for (auto node : m_preTaskNodes)
-        delete node;
-    m_preTaskNodes.clear();
-    m_preTaskNodes = m_taskNodes;
-    m_taskNodes.clear();
-
-    m_nodeNumInCols.clear();
-}
-
 void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEvent>& event, const vector<shared_ptr<TaskAnt::AntEvent>>& deps) {
+    // TODO: 无等待，但是AddNode只能在主线程
+    if (m_taskNodeQueue.back().first != g_frameNum)
+        m_taskNodeQueue.emplace_back(make_pair(g_frameNum, vector<TaskNode*>()));
+    auto& taskNodes = m_taskNodeQueue.back().second;
     const int intervalX = 350;
     const int intervalY = 100;
     auto newNode = new TaskNode(taskName, event);
     int col = 1;
-    m_taskNodes.push_back(newNode);
+    taskNodes.push_back(newNode);
     for (auto dep : deps)
-        for (auto node : m_taskNodes) {
+        for (auto node : taskNodes) {
             if (node->m_event == dep) {
                 Connection c;
                 c.input_node = newNode, c.output_node = node;
@@ -55,34 +50,38 @@ void AntWatcher::ImGuiRenderTick() {
 
     ImNodes::BeginCanvas(&canvas);
 
-    for (auto it = m_preTaskNodes.begin(); it != m_preTaskNodes.end();) {
-        auto node = *it;
-        if (ImNodes::Ez::BeginNode(node, node->m_title.c_str(), &node->m_pos, &node->m_selected)) {
-            // 输入插槽
-            ImNodes::Ez::InputSlots(inputSlots.data(), inputSlots.size());
+    // 无等待，其他线程在队尾加，渲染线程画队首
+    if (m_taskNodeQueue.size() >= 4)
+        for (auto it = m_taskNodeQueue.front().second.begin(); it != m_taskNodeQueue.front().second.end();) {
+            auto node = *it;
+            if (ImNodes::Ez::BeginNode(node, node->m_title.c_str(), &node->m_pos, &node->m_selected)) {
+                // 输入插槽
+                ImNodes::Ez::InputSlots(inputSlots.data(), inputSlots.size());
 
-            // 任务信息
-            ImGui::PushItemWidth(40);
-            time_t milliTime = node->m_event->RunningTime();
-            float time = (float)milliTime / CLOCKS_PER_SEC;
-            ImGui::TextColored(ImColor(0, 240, 0), "Running time: %.4f", time);
+                // 任务信息
+                ImGui::PushItemWidth(40);
+                time_t milliTime = node->m_event->RunningTime();
+                float time = (float)milliTime / CLOCKS_PER_SEC;
+                ImGui::TextColored(ImColor(0, 240, 0), "Running time: %.4f", time);
 
-            // 输出插槽
-            ImNodes::Ez::OutputSlots(outputSlots.data(), outputSlots.size());
+                // 输出插槽
+                ImNodes::Ez::OutputSlots(outputSlots.data(), outputSlots.size());
 
-            // 绘制边
-            for (const Connection& connection : node->m_deps) {
-                if (!ImNodes::Connection(connection.input_node, "Deps", connection.output_node,
-                                         "Event")) {
-                    // Remove deleted connections
-                    connection.input_node->DeleteConnection(connection);
+                // 绘制边
+                for (const Connection& connection : node->m_deps) {
+                    if (!ImNodes::Connection(connection.input_node, "Deps", connection.output_node,
+                                             "Event")) {
+                        // Remove deleted connections
+                        connection.input_node->DeleteConnection(connection);
+                    }
                 }
-            }
 
-            ImNodes::Ez::EndNode();
+                ImNodes::Ez::EndNode();
+            }
+            it++;
         }
-        it++;
-    }
+    // 让渲染固定慢几帧
+    while (m_taskNodeQueue.size() > 4) m_taskNodeQueue.pop_front();
 
     ImNodes::EndCanvas();
 }

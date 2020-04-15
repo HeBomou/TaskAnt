@@ -65,7 +65,8 @@
         "__tree": "cpp",
         "map": "cpp",
         "future": "cpp",
-        "__undef_macros": "cpp"
+        "__undef_macros": "cpp",
+        "list": "cpp"
     },
     "files.exclude": {
         "*.o": true

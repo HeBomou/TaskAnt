@@ -5,7 +5,7 @@
 namespace TaskAnt {
 
 AntManager::AntManager() {
-    int antNum = 1;
+    int antNum = 4;
     for (int i = 0; i < antNum; i++) {
         auto pAnt = new Ant();
         auto pAntThread = AntThread::Create(pAnt);
@@ -47,16 +47,12 @@ AntManager* AntManager::GetInstance() {
     return &instance;
 }
 
-void AntManager::StartTick() {
-    printf("Tick!\n");
-    AntWatcher::GetInstance()->NextTick();
-}
-
 shared_ptr<AntEvent> AntManager::ScheduleTask(AntTask* pTask, vector<shared_ptr<AntEvent>> pEvents) {
     auto res = pTask->Setup(pEvents.size() + 1);  // 加一为了锁住任务
     int alreadyFinished = 0;
     for (auto pE : pEvents)
         alreadyFinished += pE->TryAddSubsequent(pTask) ? 0 : 1;
+    // TODO: 条件编译
     AntWatcher::GetInstance()->AddNode(pTask->GetName(), res, pEvents);
 
     pTask->PrerequisitesComplete(alreadyFinished);

@@ -32,7 +32,6 @@ class AntManager {
    public:
     ~AntManager();
     static AntManager* GetInstance();
-    void StartTick();
     shared_ptr<AntEvent> ScheduleTask(AntTask*, vector<shared_ptr<AntEvent>>);
 };
 

@@ -14,6 +14,7 @@
 #include "TaskAnt/AntEvent.h"
 #include "TaskAnt/AntManager.h"
 #include "TaskAnt/AntTask.h"
+#include "game.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -83,8 +84,7 @@ GLFWwindow* InitContext() {
     return window;
 }
 
-shared_ptr<TaskAnt::AntEvent> ScheduleTestTasks() {
-    TaskAnt::AntManager::GetInstance()->StartTick();
+void ScheduleAndFinishTestTasks() {
     // 启动若干任务
     auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 1", 2), vector<shared_ptr<TaskAnt::AntEvent>>{});
     auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 4), vector<shared_ptr<TaskAnt::AntEvent>>{});
@@ -98,20 +98,39 @@ shared_ptr<TaskAnt::AntEvent> ScheduleTestTasks() {
     auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 10", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
     auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 11", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event5, event6, event7, event9, event10});
 
-    return event11;
+    // 完成任务
+    event11->Complete();
+}
+
+void GameLoopProc() {
+    long long tick = 0.05 * CLOCKS_PER_SEC;
+    long long timer = 0;
+    long long preTime = clock();
+
+    // Game loop
+    while (true) {
+        long long curTime = clock();
+        timer += curTime - preTime;
+        preTime = curTime;
+        if (timer >= tick) {
+            // Fixed update
+            timer -= tick;
+            g_frameNum++;
+            ScheduleAndFinishTestTasks();
+        }
+    }
 }
 
 int main() {
-    TaskAnt::AntManager::GetInstance(); // Init AntManager
+    TaskAnt::AntManager::GetInstance();  // Init AntManager
     GLFWwindow* window = InitContext();
     if (!window) return 1;
 
     // State
     ImVec4 clear_color = ImColor(204, 234, 244);
 
-    long long tick = 0.05 * CLOCKS_PER_SEC;
-    long long timer = 0;
-    long long preTime = clock();
+    // 开启游戏主循环
+    thread gameThread(GameLoopProc);
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -119,20 +138,6 @@ int main() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        // game logic
-        long long curTime = clock();
-        timer += curTime - preTime;
-        preTime = curTime;
-        shared_ptr<TaskAnt::AntEvent> event;
-        if (timer >= tick) {
-            // Fixed update
-            timer -= tick;
-            event = ScheduleTestTasks();
-        }
-
-        if (event)
-            event->Complete();
 
         // 渲染依赖图
         AntWatcher::GetInstance()->ImGuiRenderTick();

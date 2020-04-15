@@ -14,7 +14,6 @@
 #include "TaskAnt/AntManager.h"
 #include "TaskAnt/AntTask.h"
 #include "TaskAnt/AntWatcher.h"
-#include "game.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -84,19 +83,19 @@ GLFWwindow* InitContext() {
     return window;
 }
 
-void ScheduleAndFinishTestTasks() {
+void ScheduleAndFinishTestTasks(int frameNum) {
     // 启动若干任务
-    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 1", 2), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 2", 4), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 3", 3), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 4", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
-    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 5", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
-    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 6", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
-    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 7", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
-    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 8", 9), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 9", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
-    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 10", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
-    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(new TestTask("Task 11", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event5, event6, event7, event9, event10});
+    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 1", 2), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 2", 4), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 3", 3), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 4", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
+    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 5", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
+    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 6", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
+    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 7", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
+    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 8", 9), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 9", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
+    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 10", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
+    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 11", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event5, event6, event7, event9, event10});
 
     // 完成任务
     event11->Complete();
@@ -107,6 +106,8 @@ void GameLoopProc() {
     long long timer = 0;
     long long preTime = clock();
 
+    int frameNum = 0;
+
     // Game loop
     while (true) {
         long long curTime = clock();
@@ -115,8 +116,8 @@ void GameLoopProc() {
         if (timer >= tick) {
             // Fixed update
             timer -= tick;
-            g_frameNum++;
-            ScheduleAndFinishTestTasks();
+            frameNum++;
+            ScheduleAndFinishTestTasks(frameNum);
         }
     }
 }

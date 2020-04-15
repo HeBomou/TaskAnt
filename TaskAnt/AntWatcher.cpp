@@ -5,7 +5,6 @@
 #include <ImNodesEz.h>
 #include <imgui.h>
 
-#include "../game.h"
 #include "AntEvent.h"
 #include "AntManager.h"
 
@@ -60,10 +59,10 @@ AntWatcher* AntWatcher::GetInstance() {
     return &instance;
 }
 
-void AntWatcher::AddNode(const string& taskName, const shared_ptr<AntEvent>& event, const vector<shared_ptr<AntEvent>>& deps) {
+void AntWatcher::AddNode(const int& frameNum, const string& taskName, const shared_ptr<AntEvent>& event, const vector<shared_ptr<AntEvent>>& deps) {
     // TODO: 无等待，但是AddNode只能在主线程
-    if (get<0>(m_taskStateQueue.back()) != g_frameNum)
-        m_taskStateQueue.emplace_back(make_tuple(g_frameNum, vector<int>(), vector<TaskNode*>()));
+    if (get<0>(m_taskStateQueue.back()) != frameNum)
+        m_taskStateQueue.emplace_back(make_tuple(frameNum, vector<int>(), vector<TaskNode*>()));
     auto& taskNodes = get<2>(m_taskStateQueue.back());
     auto& nodeNumInCols = get<1>(m_taskStateQueue.back());
     const int intervalX = 350;

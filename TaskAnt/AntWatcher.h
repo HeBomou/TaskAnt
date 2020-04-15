@@ -18,7 +18,7 @@ class AntWatcher {
 
    public:
     static AntWatcher* GetInstance();
-    void AddNode(const string&, const shared_ptr<AntEvent>&, const vector<shared_ptr<AntEvent>>&);
+    void AddNode(const int& frameNum, const string&, const shared_ptr<AntEvent>&, const vector<shared_ptr<AntEvent>>&);
     void ImGuiRenderTick();
 };
 

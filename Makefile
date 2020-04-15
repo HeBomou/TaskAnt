@@ -17,8 +17,6 @@ LIBS += -lGLEW
 LIBS += -lglfw
 %.o:%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-%.o:AntWatcher/%.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
 %.o:TaskAnt/%.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 %.o:libs/imgui/%.cpp

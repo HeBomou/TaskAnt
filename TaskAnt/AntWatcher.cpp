@@ -2,11 +2,55 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <ImNodesEz.h>
+#include <imgui.h>
 
 #include "../game.h"
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include "AntEvent.h"
+#include "AntManager.h"
+
+namespace TaskAnt {
+
+struct TaskNode;
+
+// 边
+struct Connection {
+    // `id` that was passed to BeginNode() of input node.
+    TaskNode* input_node = nullptr;
+    // `id` that was passed to BeginNode() of output node.
+    TaskNode* output_node = nullptr;
+
+    bool operator==(const Connection& other) const {
+        return input_node == other.input_node && output_node == other.output_node;
+    }
+
+    bool operator!=(const Connection& other) const {
+        return !operator==(other);
+    }
+};
+
+struct TaskNode {
+    string m_title;
+    bool m_selected = false;
+    int m_col;
+    ImVec2 m_pos{};
+    vector<Connection> m_deps{};
+    // 事件
+    shared_ptr<AntEvent> m_event;
+
+    explicit TaskNode(const string& title, const shared_ptr<AntEvent>& event) : m_title(title), m_event(event) {
+    }
+
+    // Deletes connection from this node.
+    void DeleteConnection(const Connection& connection) {
+        for (auto it = m_deps.begin(); it != m_deps.end(); ++it) {
+            if (connection == *it) {
+                m_deps.erase(it);
+                break;
+            }
+        }
+    }
+};
 
 AntWatcher::AntWatcher() {
 }
@@ -16,7 +60,7 @@ AntWatcher* AntWatcher::GetInstance() {
     return &instance;
 }
 
-void AntWatcher::AddNode(const string& taskName, const shared_ptr<TaskAnt::AntEvent>& event, const vector<shared_ptr<TaskAnt::AntEvent>>& deps) {
+void AntWatcher::AddNode(const string& taskName, const shared_ptr<AntEvent>& event, const vector<shared_ptr<AntEvent>>& deps) {
     // TODO: 无等待，但是AddNode只能在主线程
     if (get<0>(m_taskStateQueue.back()) != g_frameNum)
         m_taskStateQueue.emplace_back(make_tuple(g_frameNum, vector<int>(), vector<TaskNode*>()));
@@ -88,3 +132,5 @@ void AntWatcher::ImGuiRenderTick() {
 
     ImNodes::EndCanvas();
 }
+
+}  // namespace TaskAnt

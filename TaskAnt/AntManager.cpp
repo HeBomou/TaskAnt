@@ -1,6 +1,6 @@
 #include "AntManager.h"
 
-#include "../AntWatcher/AntWatcher.h"
+#include "AntWatcher.h"
 
 namespace TaskAnt {
 

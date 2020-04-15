@@ -9,11 +9,11 @@
 #include <thread>
 #include <vector>
 
-#include "AntWatcher/AntWatcher.h"
 #include "ImNodesEz.h"
 #include "TaskAnt/AntEvent.h"
 #include "TaskAnt/AntManager.h"
 #include "TaskAnt/AntTask.h"
+#include "TaskAnt/AntWatcher.h"
 #include "game.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -140,7 +140,7 @@ int main() {
         ImGui::NewFrame();
 
         // 渲染依赖图
-        AntWatcher::GetInstance()->ImGuiRenderTick();
+        TaskAnt::AntWatcher::GetInstance()->ImGuiRenderTick();
 
         // Rendering
         ImGui::Render();

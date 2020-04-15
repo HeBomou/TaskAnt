@@ -103,7 +103,7 @@ void ScheduleAndFinishTestTasks() {
 }
 
 void GameLoopProc() {
-    long long tick = 0.05 * CLOCKS_PER_SEC;
+    long long tick = 0.03 * CLOCKS_PER_SEC;
     long long timer = 0;
     long long preTime = clock();
 

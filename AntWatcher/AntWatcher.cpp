@@ -52,7 +52,8 @@ void AntWatcher::ImGuiRenderTick() {
     ImNodes::BeginCanvas(&canvas);
 
     // 无等待，其他线程在队尾加，渲染线程画队首
-    if (m_taskStateQueue.size() >= 4)
+    const int maxSize = 4;
+    if (m_taskStateQueue.size() >= maxSize) {
         for (auto it = get<2>(m_taskStateQueue.front()).begin(); it != get<2>(m_taskStateQueue.front()).end();) {
             auto node = *it;
             if (ImNodes::Ez::BeginNode(node, node->m_title.c_str(), &node->m_pos, &node->m_selected)) {
@@ -81,8 +82,9 @@ void AntWatcher::ImGuiRenderTick() {
             }
             it++;
         }
-    // 让渲染固定慢几帧
-    while (m_taskStateQueue.size() > 4) m_taskStateQueue.pop_front();
+        // 让渲染固定慢几帧
+        while (m_taskStateQueue.size() > maxSize) m_taskStateQueue.pop_front();
+    }
 
     ImNodes::EndCanvas();
 }

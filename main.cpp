@@ -3,13 +3,13 @@
 #include <time.h>
 
 #include <chrono>
+#include <cmath>
 #include <cstdio>
 #include <map>
 #include <string>
 #include <thread>
 #include <vector>
 
-#include "ImNodesEz.h"
 #include "TaskAnt/AntEvent.h"
 #include "TaskAnt/AntManager.h"
 #include "TaskAnt/AntTask.h"
@@ -17,6 +17,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "imnodes.h"
 
 using namespace std;
 
@@ -80,7 +81,21 @@ GLFWwindow* InitContext() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    imnodes::Initialize();
+
     return window;
+}
+
+void Cleanup(GLFWwindow* window) {
+    imnodes::Shutdown();
+
+    // Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
 
 void ScheduleAndFinishTestTasks(int frameNum) {
@@ -102,7 +117,7 @@ void ScheduleAndFinishTestTasks(int frameNum) {
 }
 
 void GameLoopProc() {
-    long long tick = 0.03 * CLOCKS_PER_SEC;
+    long long tick = 0.2 * CLOCKS_PER_SEC;
     long long timer = 0;
     long long preTime = clock();
 
@@ -123,7 +138,6 @@ void GameLoopProc() {
 }
 
 int main() {
-    TaskAnt::AntManager::GetInstance();  // Init AntManager
     GLFWwindow* window = InitContext();
     if (!window) return 1;
 
@@ -155,13 +169,7 @@ int main() {
         glfwSwapBuffers(window);
     }
 
-    // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    Cleanup(window);
 
     return 0;
 }

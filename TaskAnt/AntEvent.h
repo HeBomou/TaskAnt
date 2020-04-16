@@ -19,6 +19,7 @@ class AntEvent {
     promise<int> m_finishPromise;
     time_t m_startTime;
     time_t m_runningTime = 0;
+    bool m_finished = false;
 
     bool TryAddSubsequent(AntTask *);
     void BeforeRun();

@@ -99,6 +99,8 @@ void AntWatcher::AddNode(const int& frameNum, const string& taskName, const shar
 void AntWatcher::ImGuiRenderTick() {
     ImGui::Begin("Dependencies");
 
+    ImGui::SetWindowSize(ImVec2(600, 400));
+
     imnodes::BeginNodeEditor();
 
     // 无等待，其他线程在队尾加，渲染线程画队首

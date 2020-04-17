@@ -2,6 +2,8 @@
 
 #include "AntWatcher.h"
 
+using namespace std;
+
 namespace TaskAnt {
 
 AntManager::AntManager() {

@@ -10,17 +10,15 @@
 #include "AntTask.h"
 #include "AntThread.h"
 
-using namespace std;
-
 namespace TaskAnt {
 
 class AntManager {
    private:
-    vector<Ant*> m_pAnts;
-    vector<AntThread*> m_pAntThreads;
-    condition_variable m_taskQueueCv;
-    mutex m_taskQueueMutex;
-    queue<AntTask*> m_pTaskQueue;
+    std::vector<Ant*> m_pAnts;
+    std::vector<AntThread*> m_pAntThreads;
+    std::condition_variable m_taskQueueCv;
+    std::mutex m_taskQueueMutex;
+    std::queue<AntTask*> m_pTaskQueue;
 
     AntManager();
     AntTask* GetNextTask();
@@ -32,8 +30,8 @@ class AntManager {
    public:
     ~AntManager();
     static AntManager* GetInstance();
-    shared_ptr<AntEvent> ScheduleTask(const int&, const string&, const function<void()>&, const vector<shared_ptr<AntEvent>>&);
-    vector<shared_ptr<AntEvent>> ScheduleTaskParallel(const int&, const string&, int, const function<void(int)>&, const vector<shared_ptr<AntEvent>>&);
+    std::shared_ptr<AntEvent> ScheduleTask(const int&, const std::string&, const std::function<void()>&, const std::vector<std::shared_ptr<AntEvent>>&);
+    std::vector<std::shared_ptr<AntEvent>> ScheduleTaskParallel(const int&, const std::string&, int, const std::function<void(int)>&, const std::vector<std::shared_ptr<AntEvent>>&);
 };
 
 }  // namespace TaskAnt

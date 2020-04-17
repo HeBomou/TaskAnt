@@ -6,20 +6,18 @@
 
 #include "AntEvent.h"
 
-using namespace std;
-
 namespace TaskAnt {
 
 class AntEvent;
 
 class AntTask {
    private:
-    string m_name;
-    function<void()> m_proc;
-    atomic<int> m_inDegree;
-    shared_ptr<AntEvent> m_event;
+    std::string m_name;
+    std::function<void()> m_proc;
+    std::atomic<int> m_inDegree;
+    std::shared_ptr<AntEvent> m_event;
 
-    shared_ptr<AntEvent> Setup(int);
+    std::shared_ptr<AntEvent> Setup(int);
     void PrerequisitesComplete(int);
     void ConditionalQueueTask();
     void BeforeRun();
@@ -30,7 +28,7 @@ class AntTask {
     friend class Ant;
 
    public:
-    AntTask(const string& name, const function<void()>& proc);
+    AntTask(const std::string& name, const std::function<void()>& proc);
 };
 
 }  // namespace TaskAnt

@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 namespace TaskAnt {
 
 class AntEvent;
@@ -12,13 +10,13 @@ struct TaskNode;
 
 class AntWatcher {
    private:
-    list<tuple<int, vector<int>, vector<TaskNode*>>> m_taskStateQueue;
+    std::list<std::tuple<int, std::vector<int>, std::vector<TaskNode*>>> m_taskStateQueue;
 
     AntWatcher();
 
    public:
     static AntWatcher* GetInstance();
-    void AddNode(const int& frameNum, const string&, const shared_ptr<AntEvent>&, const vector<shared_ptr<AntEvent>>&);
+    void AddNode(const int& frameNum, const std::string&, const std::shared_ptr<AntEvent>&, const std::vector<std::shared_ptr<AntEvent>>&);
     void ImGuiRenderTick();
 };
 

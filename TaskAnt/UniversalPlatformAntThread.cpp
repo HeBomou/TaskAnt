@@ -1,10 +1,12 @@
 #include "UniversalPlatformAntThread.h"
 
+using namespace std;
+
 namespace TaskAnt {
 
 void UniversalPlatformAntThread::CreateInternal(AntThreadProc* pProc) {
     m_pProc = pProc;
-    m_thread = std::thread(ThreadEntryPoint, this);
+    m_thread = thread(ThreadEntryPoint, this);
 }
 
 void UniversalPlatformAntThread::ThreadEntryPoint(

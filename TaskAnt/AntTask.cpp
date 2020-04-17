@@ -2,6 +2,8 @@
 
 #include "AntManager.h"
 
+using namespace std;
+
 namespace TaskAnt {
 
 shared_ptr<AntEvent> AntTask::Setup(int inDegree) {

@@ -8,6 +8,8 @@
 #include "AntEvent.h"
 #include "AntManager.h"
 
+using namespace std;
+
 namespace TaskAnt {
 
 struct TaskNode;

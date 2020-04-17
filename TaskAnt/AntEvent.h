@@ -6,24 +6,22 @@
 
 #include "AntTask.h"
 
-using namespace std;
-
 namespace TaskAnt {
 
 class AntTask;
 
 class AntEvent {
    private:
-    mutex m_mtx;
-    vector<AntTask *> m_subsequents;  // TODO: Lockfree
-    promise<int> m_finishPromise;
+    std::mutex m_mtx;
+    std::vector<AntTask *> m_subsequents;  // TODO: Lockfree
+    std::promise<int> m_finishPromise;
     time_t m_startTime;
     time_t m_runningTime = 0;
     bool m_finished = false;
 
     bool TryAddSubsequent(AntTask *);
     void BeforeRun();
-    void AfterRun(string name);
+    void AfterRun(std::string name);
 
     friend class AntManager;
     friend class AntTask;

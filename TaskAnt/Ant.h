@@ -6,7 +6,7 @@ namespace TaskAnt {
 
 class Ant : public AntThreadProc {
    private:
-    bool m_killed;
+    bool m_killed = false;
 
    public:
     Ant();

@@ -7,7 +7,7 @@ using namespace std;
 namespace TaskAnt {
 
 AntManager::AntManager() {
-    int antNum = 4;
+    int antNum = 32;
     for (int i = 0; i < antNum; i++) {
         auto pAnt = new Ant();
         auto pAntThread = AntThread::Create(pAnt);

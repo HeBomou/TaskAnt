@@ -32,7 +32,8 @@ class AntManager {
    public:
     ~AntManager();
     static AntManager* GetInstance();
-    shared_ptr<AntEvent> ScheduleTask(const int&, const string&, function<void()>, const vector<shared_ptr<AntEvent>>&);
+    shared_ptr<AntEvent> ScheduleTask(const int&, const string&, const function<void()>&, const vector<shared_ptr<AntEvent>>&);
+    vector<shared_ptr<AntEvent>> ScheduleTaskParallel(const int&, const string&, int, const function<void(int)>&, const vector<shared_ptr<AntEvent>>&);
 };
 
 }  // namespace TaskAnt

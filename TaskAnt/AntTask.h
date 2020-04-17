@@ -30,7 +30,7 @@ class AntTask {
     friend class Ant;
 
    public:
-    AntTask(const string& name, function<void()> proc);
+    AntTask(const string& name, const function<void()>& proc);
 };
 
 }  // namespace TaskAnt

@@ -2,6 +2,8 @@
 
 #include <ctime>
 
+using namespace std;
+
 namespace TaskAnt {
 
 bool AntEvent::TryAddSubsequent(AntTask* pTask) {

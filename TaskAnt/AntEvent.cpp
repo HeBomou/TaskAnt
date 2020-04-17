@@ -1,6 +1,6 @@
 #include "AntEvent.h"
 
-#include <time.h>
+#include <ctime>
 
 namespace TaskAnt {
 

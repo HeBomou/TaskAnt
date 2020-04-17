@@ -1,10 +1,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <time.h>
 
 #include <chrono>
 #include <cmath>
 #include <cstdio>
+#include <ctime>
 #include <map>
 #include <string>
 #include <thread>

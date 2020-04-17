@@ -11,22 +11,20 @@ Ant::Ant() {}
 
 Ant::~Ant() {}
 
-void Ant::Run()
-{
+void Ant::Run() {
     while (!m_killed) {
         auto pTask = AntManager::GetInstance()->GetNextTask();
         if (pTask) {
             pTask->BeforeRun();
-            pTask->Run();
+            pTask->m_proc();
             pTask->AfterRun();
             delete pTask;
         }
     }
 }
 
-void Ant::Stop()
-{
+void Ant::Stop() {
     m_killed = true;
 }
 
-} // namespace TaskAnt
+}  // namespace TaskAnt

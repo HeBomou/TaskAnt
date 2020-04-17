@@ -15,6 +15,7 @@ class AntEvent;
 class AntTask {
    private:
     string m_name;
+    function<void()> m_proc;
     atomic<int> m_inDegree;
     shared_ptr<AntEvent> m_event;
 
@@ -28,13 +29,8 @@ class AntTask {
     friend class AntEvent;
     friend class Ant;
 
-   protected:
-    virtual void Run() = 0;
-
    public:
-    AntTask(const string& name);
-    virtual ~AntTask() = 0;
-    const string& GetName() const;
+    AntTask(const string& name, function<void()> proc);
 };
 
 }  // namespace TaskAnt

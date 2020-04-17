@@ -46,13 +46,14 @@ AntManager* AntManager::GetInstance() {
     return &instance;
 }
 
-shared_ptr<AntEvent> AntManager::ScheduleTask(const int& frameNum, AntTask* pTask, const vector<shared_ptr<AntEvent>>& pEvents) {
+shared_ptr<AntEvent> AntManager::ScheduleTask(const int& frameNum, const string& name, function<void()> proc, const vector<shared_ptr<AntEvent>>& pEvents) {
+    auto pTask = new AntTask(name, proc);
     auto res = pTask->Setup(pEvents.size() + 1);  // 加一为了锁住任务
     int alreadyFinished = 0;
     for (auto pE : pEvents)
         alreadyFinished += pE->TryAddSubsequent(pTask) ? 0 : 1;
     // TODO: 条件编译
-    AntWatcher::GetInstance()->AddNode(frameNum, pTask->GetName(), res, pEvents);
+    AntWatcher::GetInstance()->AddNode(frameNum, name, res, pEvents);
 
     pTask->PrerequisitesComplete(alreadyFinished);
     return res;

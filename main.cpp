@@ -21,12 +21,11 @@
 
 using namespace std;
 
-struct TestTask : public TaskAnt::AntTask {
+struct TestProc {
     int m_outputNum;
     int m_time;
-    TestTask(string name, const int& outputNum) : AntTask(name), m_outputNum(outputNum) {}
-    virtual ~TestTask() override {}
-    virtual void Run() override {
+    TestProc(const int& outputNum) : m_outputNum(outputNum) {}
+    void operator()() {
         for (int i = 0; i < m_outputNum; i++) {
             m_time++;
             for (int j = 0; j < m_outputNum * 1000; j++)
@@ -99,18 +98,45 @@ void Cleanup(GLFWwindow* window) {
 }
 
 void ScheduleAndFinishTestTasks(int frameNum) {
+    auto proc3 = []() {
+        int time = 0;
+        for (int i = 0; i < 3; i++) {
+            time++;
+            for (int j = 0; j < 3 * 1000; j++)
+                time += sqrt(j);
+        }
+    };
+    int proc4Num = 5;
+    auto proc4 = [proc4Num]() {
+        int time = 0;
+        for (int i = 0; i < proc4Num; i++) {
+            time++;
+            for (int j = 0; j < proc4Num * 1000; j++)
+                time += sqrt(j);
+        }
+    };
+
     // 启动若干任务
-    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 1", 2), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 2", 4), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 3", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
-    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 4", 2), vector<shared_ptr<TaskAnt::AntEvent>>{event3});
-    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 5", 8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
-    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 6", 3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
-    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 7", 5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
-    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 8", 9), vector<shared_ptr<TaskAnt::AntEvent>>{});
-    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 9", 7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
-    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 10", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
-    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, new TestTask("Task 11", 9), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event5, event6, event7, event9, event10});
+    auto event1 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 1", TestProc(2), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event2 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 2", TestProc(4), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event3 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 3", proc3, vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
+    auto event4 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 4", proc4, vector<shared_ptr<TaskAnt::AntEvent>>{event3});
+    auto event5 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 5", TestProc(8), vector<shared_ptr<TaskAnt::AntEvent>>{event1, event2});
+    auto event6 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 6", TestProc(3), vector<shared_ptr<TaskAnt::AntEvent>>{event2});
+    auto event7 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 7", TestProc(5), vector<shared_ptr<TaskAnt::AntEvent>>{event5});
+    auto event8 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 8", TestProc(9), vector<shared_ptr<TaskAnt::AntEvent>>{});
+    auto event9 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 9", TestProc(7), vector<shared_ptr<TaskAnt::AntEvent>>{event4, event8});
+    auto event10 = TaskAnt::AntManager::GetInstance()->ScheduleTask(frameNum, "Task 10", TestProc(9), vector<shared_ptr<TaskAnt::AntEvent>>{event6});
+    auto event11 = TaskAnt::AntManager::GetInstance()->ScheduleTask(
+        frameNum, "Task 11", []() {
+            int time = 0;
+            for (int i = 0; i < 11; i++) {
+                time++;
+                for (int j = 0; j < 11 * 1000; j++)
+                    time += sqrt(j);
+            }
+        },
+        vector<shared_ptr<TaskAnt::AntEvent>>{event4, event5, event6, event7, event9, event10});
 
     // 完成任务
     event11->Complete();

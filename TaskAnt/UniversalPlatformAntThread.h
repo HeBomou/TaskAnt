@@ -1,8 +1,8 @@
 #pragma once
 
-#include "AntThread.h"
-
 #include <thread>
+
+#include "AntThread.h"
 
 namespace TaskAnt {
 

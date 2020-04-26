@@ -104,6 +104,7 @@ void AntWatcher::ImGuiRenderTick() {
 
     ImGui::SetWindowSize(ImVec2(600, 400));
 
+    // 暂停
     if (m_pause) {
         if (ImGui::Button("Resume"))
             m_pause = false;

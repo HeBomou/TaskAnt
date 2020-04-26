@@ -67,36 +67,8 @@ map<string, int> TaskNode::s_edgeMap{};
 AntWatcher::AntWatcher() {
 }
 
-AntWatcher* AntWatcher::GetInstance() {
-    static AntWatcher instance;
-    return &instance;
-}
-
-void AntWatcher::AddNode(const int& frameNum, const string& taskName, const shared_ptr<AntEvent>& event, const vector<shared_ptr<AntEvent>>& deps) {
-    // AddNode可以在任意线程
-    lock_guard<mutex> lock(m_mtx);
-    if (get<0>(m_taskStateQueue.back()) != frameNum)
-        m_taskStateQueue.emplace_back(make_tuple(frameNum, vector<int>(), vector<TaskNode*>()));
-    auto& taskNodes = get<2>(m_taskStateQueue.back());
-    auto& nodeNumInCols = get<1>(m_taskStateQueue.back());
-    const int intervalX = 150;
-    const int intervalY = 100;
-    auto newNode = new TaskNode(taskName, event);
-    int col = 1;
-    taskNodes.push_back(newNode);
-    for (auto dep : deps)
-        for (auto node : taskNodes) {
-            if (node->m_event == dep) {
-                newNode->AddDep(node);
-                col = max(col, node->m_col + 1);
-                break;
-            }
-        }
-    if (nodeNumInCols.size() < col)
-        nodeNumInCols.emplace_back(0);
-    int row = ++nodeNumInCols[col - 1];
-    newNode->m_col = col;
-    newNode->m_pos = ImVec2(col * intervalX - intervalX * 0.8, row * intervalY + !(col & 1) * intervalY * 0.3 - intervalY * 0.8);
+void AntWatcher::LogTick() {
+    // TODO:
 }
 
 void AntWatcher::ImGuiRenderTick() {
@@ -148,6 +120,42 @@ void AntWatcher::ImGuiRenderTick() {
     imnodes::EndNodeEditor();
 
     ImGui::End();
+}
+
+AntWatcher* AntWatcher::GetInstance() {
+    static AntWatcher instance;
+    return &instance;
+}
+
+void AntWatcher::AddNode(const int& frameNum, const string& taskName, const shared_ptr<AntEvent>& event, const vector<shared_ptr<AntEvent>>& deps) {
+    // AddNode可以在任意线程
+    lock_guard<mutex> lock(m_mtx);
+    if (get<0>(m_taskStateQueue.back()) != frameNum)
+        m_taskStateQueue.emplace_back(make_tuple(frameNum, vector<int>(), vector<TaskNode*>()));
+    auto& taskNodes = get<2>(m_taskStateQueue.back());
+    auto& nodeNumInCols = get<1>(m_taskStateQueue.back());
+    const int intervalX = 150;
+    const int intervalY = 100;
+    auto newNode = new TaskNode(taskName, event);
+    int col = 1;
+    taskNodes.push_back(newNode);
+    for (auto dep : deps)
+        for (auto node : taskNodes) {
+            if (node->m_event == dep) {
+                newNode->AddDep(node);
+                col = max(col, node->m_col + 1);
+                break;
+            }
+        }
+    if (nodeNumInCols.size() < col)
+        nodeNumInCols.emplace_back(0);
+    int row = ++nodeNumInCols[col - 1];
+    newNode->m_col = col;
+    newNode->m_pos = ImVec2(col * intervalX - intervalX * 0.8, row * intervalY + !(col & 1) * intervalY * 0.3 - intervalY * 0.8);
+}
+
+void AntWatcher::Tick() {
+    ImGuiRenderTick();
 }
 
 }  // namespace TaskAnt

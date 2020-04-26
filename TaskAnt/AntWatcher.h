@@ -18,11 +18,13 @@ class AntWatcher {
     bool m_pause = 0;
 
     AntWatcher();
+    void LogTick();
+    void ImGuiRenderTick();
 
    public:
     static AntWatcher* GetInstance();
     void AddNode(const int& frameNum, const std::string&, const std::shared_ptr<AntEvent>&, const std::vector<std::shared_ptr<AntEvent>>&);
-    void ImGuiRenderTick();
+    void Tick();
 };
 
 }  // namespace TaskAnt

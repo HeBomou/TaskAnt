@@ -68,13 +68,14 @@ AntWatcher::AntWatcher() {
 }
 
 void AntWatcher::LogTick() {
-    // TODO:
+    // TODO: 输出到日志文件
 }
 
 void AntWatcher::ImGuiRenderTick() {
-    ImGui::Begin("Dependencies", NULL, ImGuiWindowFlags_NoResize);
+    // 显示依赖关系
+    ImGui::Begin("Dependencies");
 
-    ImGui::SetWindowSize(ImVec2(600, 400));
+    // ImGui::SetWindowSize(ImVec2(600, 400));
 
     // 暂停
     if (m_pause) {
@@ -118,6 +119,11 @@ void AntWatcher::ImGuiRenderTick() {
     }
 
     imnodes::EndNodeEditor();
+
+    ImGui::End();
+
+    // TODO: 显示时间线
+    ImGui::Begin("Timeline");
 
     ImGui::End();
 }

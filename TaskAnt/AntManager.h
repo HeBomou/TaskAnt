@@ -10,6 +10,8 @@
 #include "AntTask.h"
 #include "AntThread.h"
 
+#define DEBUG
+
 namespace TaskAnt {
 
 class AntManager {

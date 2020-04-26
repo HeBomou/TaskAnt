@@ -54,8 +54,9 @@ shared_ptr<AntEvent> AntManager::ScheduleTask(const int& frameNum, const string&
     int alreadyFinished = 0;
     for (auto pE : pEvents)
         alreadyFinished += pE->TryAddSubsequent(pTask) ? 0 : 1;
-    // TODO: 条件编译
+#ifdef DEBUG
     AntWatcher::GetInstance()->AddNode(frameNum, name, res, pEvents);
+#endif
 
     pTask->PrerequisitesComplete(alreadyFinished);
     return res;

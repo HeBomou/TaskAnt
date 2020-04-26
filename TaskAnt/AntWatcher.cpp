@@ -73,7 +73,8 @@ AntWatcher* AntWatcher::GetInstance() {
 }
 
 void AntWatcher::AddNode(const int& frameNum, const string& taskName, const shared_ptr<AntEvent>& event, const vector<shared_ptr<AntEvent>>& deps) {
-    // TODO: 无等待，但是AddNode只能在主线程
+    // AddNode可以在任意线程
+    lock_guard<mutex> lock(m_mtx);
     if (get<0>(m_taskStateQueue.back()) != frameNum)
         m_taskStateQueue.emplace_back(make_tuple(frameNum, vector<int>(), vector<TaskNode*>()));
     auto& taskNodes = get<2>(m_taskStateQueue.back());
@@ -99,16 +100,24 @@ void AntWatcher::AddNode(const int& frameNum, const string& taskName, const shar
 }
 
 void AntWatcher::ImGuiRenderTick() {
-    ImGui::Begin("Dependencies");
+    ImGui::Begin("Dependencies", NULL, ImGuiWindowFlags_NoResize);
 
     ImGui::SetWindowSize(ImVec2(600, 400));
+
+    if (m_pause) {
+        if (ImGui::Button("Resume"))
+            m_pause = false;
+    } else if (ImGui::Button("Pause"))
+        m_pause = true;
 
     imnodes::BeginNodeEditor();
 
     // 无等待，其他线程在队尾加，渲染线程画队首
     const int maxSize = 4;
     if (m_taskStateQueue.size() >= maxSize) {
-        for (auto it = get<2>(m_taskStateQueue.front()).begin(); it != get<2>(m_taskStateQueue.front()).end();) {
+        if (!m_pause && m_tasksToDisplayFrameNum != get<0>(m_taskStateQueue.front()))
+            m_tasksToDisplay = get<2>(m_taskStateQueue.front());
+        for (auto it = m_tasksToDisplay.begin(); it != m_tasksToDisplay.end(); it++) {
             auto node = *it;
             imnodes::BeginNode(node->m_id);
             // 标题
@@ -130,7 +139,6 @@ void AntWatcher::ImGuiRenderTick() {
             imnodes::SetNodeGridSpacePos(node->m_id, node->m_pos);
             for (const Connection& connection : node->GetDeps())
                 imnodes::Link(connection.m_id, node->m_inputId, connection.m_dep->m_outputId);
-            it++;
         }
         // 让渲染固定慢几帧
         while (m_taskStateQueue.size() > maxSize) m_taskStateQueue.pop_front();

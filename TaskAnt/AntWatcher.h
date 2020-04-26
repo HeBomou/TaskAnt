@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <mutex>
 
 namespace TaskAnt {
 
@@ -10,7 +11,11 @@ struct TaskNode;
 
 class AntWatcher {
    private:
+    std::mutex m_mtx;
     std::list<std::tuple<int, std::vector<int>, std::vector<TaskNode*>>> m_taskStateQueue;
+    int m_tasksToDisplayFrameNum = -1;
+    std::vector<TaskNode*> m_tasksToDisplay;
+    bool m_pause = 0;
 
     AntWatcher();
 

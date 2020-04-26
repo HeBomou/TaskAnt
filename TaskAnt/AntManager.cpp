@@ -32,7 +32,7 @@ void AntManager::QueueTask(AntTask* pTask) {
 }
 
 AntManager::~AntManager() {
-    // TODO: 目前在退出时是放弃未执行的任务，可以考虑改成完成所有的任务
+    // HACK: 目前在退出时是放弃未执行的任务，可以考虑改成完成所有的任务
     for (auto pAnt : m_pAnts) pAnt->Stop();
     m_taskQueueCv.notify_all();
     for (auto pThread : m_pAntThreads) delete pThread;

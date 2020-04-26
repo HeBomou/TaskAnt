@@ -181,7 +181,7 @@ int main() {
         ImGui::NewFrame();
 
         // 渲染依赖图
-        TaskAnt::AntWatcher::GetInstance()->ImGuiRenderTick();
+        TaskAnt::AntWatcher::GetInstance()->Tick();
 
         // Rendering
         ImGui::Render();

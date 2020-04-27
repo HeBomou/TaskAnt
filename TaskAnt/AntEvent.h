@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <future>
 #include <mutex>
 #include <vector>
@@ -13,14 +14,14 @@ class AntTask;
 class AntEvent {
    private:
     std::mutex m_mtx;
-    std::vector<AntTask *> m_subsequents;  // TODO: Lockfree
+    std::vector<AntTask*> m_subsequents;  // TODO: Lockfree
     std::promise<int> m_finishPromise;
     int m_antId = -1;
-    time_t m_startTime = -1;
-    time_t m_runningTime = 0;
+    long long m_startTimeMicroSecond;
+    long long m_runningTimeMicroSecond;
     bool m_finished = false;
 
-    bool TryAddSubsequent(AntTask *);
+    bool TryAddSubsequent(AntTask*);
     void BeforeRun(const int&);
     void AfterRun(std::string name);
 
@@ -29,8 +30,8 @@ class AntEvent {
 
    public:
     const int& AntId() const;
-    const time_t& StartTime() const;
-    const time_t& RunningTime() const;
+    const long long& StartTimeMicroSecond() const;
+    const long long& RunningTimeMicroSecond() const;
     void Complete();
 };
 

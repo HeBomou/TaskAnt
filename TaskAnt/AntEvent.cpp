@@ -1,6 +1,6 @@
 #include "AntEvent.h"
 
-#include <ctime>
+#include <chrono>
 
 using namespace std;
 
@@ -15,12 +15,15 @@ bool AntEvent::TryAddSubsequent(AntTask* pTask) {
 
 void AntEvent::BeforeRun(const int& antId) {
     m_antId = antId;
-    m_startTime = clock();
+    auto startTime = chrono::time_point_cast<chrono::microseconds>(chrono::steady_clock::now());
+    m_startTimeMicroSecond = startTime.time_since_epoch().count();
 }
 
 void AntEvent::AfterRun(string name) {
     lock_guard<mutex> lock(m_mtx);
-    m_runningTime = clock() - m_startTime;
+
+    auto runningTime = chrono::time_point_cast<chrono::microseconds>(chrono::steady_clock::now());
+    m_runningTimeMicroSecond = runningTime.time_since_epoch().count() - m_startTimeMicroSecond;
     m_finished = true;
     m_finishPromise.set_value(0);
     for (auto task : m_subsequents) task->ConditionalQueueTask();
@@ -30,12 +33,12 @@ const int& AntEvent::AntId() const {
     return m_antId;
 }
 
-const time_t& AntEvent::StartTime() const {
-    return m_startTime;
+const long long& AntEvent::StartTimeMicroSecond() const {
+    return m_startTimeMicroSecond;
 }
 
-const time_t& AntEvent::RunningTime() const {
-    return m_runningTime;
+const long long& AntEvent::RunningTimeMicroSecond() const {
+    return m_runningTimeMicroSecond;
 }
 
 void AntEvent::Complete() { m_finishPromise.get_future().get(); }

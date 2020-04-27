@@ -80,10 +80,10 @@ vector<shared_ptr<AntEvent>> AntManager::ScheduleTaskParallel(const int& frameNu
     if (numPerProc) {
         numPerProc += (totalNum % taskNum) ? 1 : 0;
         for (int i = 0; i < totalNum; i += numPerProc)
-            res.emplace_back(ScheduleTask(frameNum, name + to_string(i), ParallelProcessExecutor(i, min(i + numPerProc, totalNum), proc), pEvents));
+            res.emplace_back(ScheduleTask(frameNum, name + " " + to_string(i), ParallelProcessExecutor(i, min(i + numPerProc, totalNum), proc), pEvents));
     } else {
         for (int i = 0; i < totalNum; i++)
-            res.emplace_back(ScheduleTask(frameNum, name + to_string(i), ParallelProcessExecutor(i, i + 1, proc), pEvents));
+            res.emplace_back(ScheduleTask(frameNum, name + " " + to_string(i), ParallelProcessExecutor(i, i + 1, proc), pEvents));
     }
     return res;
 }

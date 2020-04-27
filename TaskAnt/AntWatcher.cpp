@@ -106,7 +106,7 @@ void AntWatcher::ImGuiRenderTick() {
         ImGui::Text("%s", node->m_title.c_str());
         imnodes::EndNodeTitleBar();
         // 运行时间
-        ImGui::TextColored(ImColor(0, 240, 0), "%.4f", (float)node->m_event->RunningTime() / CLOCKS_PER_SEC);
+        ImGui::TextColored(ImColor(0, 240, 0), "%.4f", (float)node->m_event->RunningTime() * 1000 / CLOCKS_PER_SEC);
         // 输入插槽
         imnodes::BeginInputAttribute(node->m_inputId);
         ImGui::Text("Dep");
@@ -129,11 +129,10 @@ void AntWatcher::ImGuiRenderTick() {
 
     int reserveT = 100;
     int lineHeight = 40;
-    float factor = 0.75f;
+    float factor = 0.5f;
     time_t minT = m_tasksToDisplay.empty() ? -1 : m_tasksToDisplay.front()->m_event->StartTime();
     for (auto node : m_tasksToDisplay)
         minT = min(minT, node->m_event->StartTime());
-    minT *= factor;
 
     int preAntId = -1;
 
@@ -143,9 +142,9 @@ void AntWatcher::ImGuiRenderTick() {
             ImGui::Button(("Ant " + to_string(preAntId)).c_str(), ImVec2(reserveT >> 1, lineHeight));
         }
         const string& taskName = node->m_title;
-        const time_t& startTime = node->m_event->StartTime() * factor;
-        const time_t& runningTime = node->m_event->RunningTime() * factor;
-        ImGui::SameLine(startTime - minT + reserveT);
+        float startTime = (float)(node->m_event->StartTime() - minT) * 1000000 / CLOCKS_PER_SEC * factor;
+        float runningTime = (float)node->m_event->RunningTime() * 1000000 / CLOCKS_PER_SEC * factor + 0.01f;
+        ImGui::SameLine(startTime + reserveT);
         ImGui::Button(taskName.c_str(), ImVec2(runningTime, lineHeight));
     }
 

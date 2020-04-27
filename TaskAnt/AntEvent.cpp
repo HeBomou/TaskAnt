@@ -25,7 +25,11 @@ void AntEvent::AfterRun(string name) {
     for (auto task : m_subsequents) task->ConditionalQueueTask();
 }
 
-time_t AntEvent::RunningTime() {
+const time_t& AntEvent::StartTime() const {
+    return m_startTime;
+}
+
+const time_t& AntEvent::RunningTime() const {
     return m_runningTime;
 }
 

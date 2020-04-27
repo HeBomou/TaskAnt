@@ -27,7 +27,8 @@ class AntEvent {
     friend class AntTask;
 
    public:
-    time_t RunningTime();
+    const time_t& StartTime() const;
+    const time_t& RunningTime() const;
     void Complete();
 };
 

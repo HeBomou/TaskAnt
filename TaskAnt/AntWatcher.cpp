@@ -3,6 +3,7 @@
 #include <imgui.h>
 #include <imnodes.h>
 
+#include <algorithm>
 #include <map>
 
 #include "AntEvent.h"
@@ -129,7 +130,7 @@ void AntWatcher::ImGuiRenderTick() {
     int reserveT = 100;
     int lineHeight = 40;
     float factor = 0.75f;
-    long minT = INT_MAX;
+    time_t minT = m_tasksToDisplay.empty() ? -1 : m_tasksToDisplay.front()->m_event->StartTime();
     for (auto node : m_tasksToDisplay)
         minT = min(minT, node->m_event->StartTime());
     minT *= factor;

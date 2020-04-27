@@ -126,9 +126,9 @@ void AntWatcher::ImGuiRenderTick() {
     // TODO: 显示时间线
     ImGui::Begin("Timeline");
 
-    int reserveT = 50;
+    int reserveT = 100;
     int lineHeight = 40;
-    float factor = 0.5f;
+    float factor = 0.75f;
     long minT = INT_MAX;
     for (auto node : m_tasksToDisplay)
         minT = min(minT, node->m_event->StartTime());
@@ -139,7 +139,7 @@ void AntWatcher::ImGuiRenderTick() {
     for (auto node : m_tasksToDisplay) {
         if (node->m_event->AntId() != preAntId) {
             preAntId = node->m_event->AntId();
-            ImGui::Button(("Ant " + to_string(preAntId)).c_str(), ImVec2(reserveT, lineHeight));
+            ImGui::Button(("Ant " + to_string(preAntId)).c_str(), ImVec2(reserveT >> 1, lineHeight));
         }
         const string& taskName = node->m_title;
         const time_t& startTime = node->m_event->StartTime() * factor;

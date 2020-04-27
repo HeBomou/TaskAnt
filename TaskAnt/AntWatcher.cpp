@@ -129,7 +129,7 @@ void AntWatcher::ImGuiRenderTick() {
 
     int reserveT = 100;
     int lineHeight = 40;
-    float factor = 0.5f;
+    float factor = 0.08f;
     time_t minT = m_tasksToDisplay.empty() ? -1 : m_tasksToDisplay.front()->m_event->StartTime();
     for (auto node : m_tasksToDisplay)
         minT = min(minT, node->m_event->StartTime());
@@ -143,7 +143,7 @@ void AntWatcher::ImGuiRenderTick() {
         }
         const string& taskName = node->m_title;
         float startTime = (float)(node->m_event->StartTime() - minT) * 1000000 / CLOCKS_PER_SEC * factor;
-        float runningTime = (float)node->m_event->RunningTime() * 1000000 / CLOCKS_PER_SEC * factor + 0.01f;
+        float runningTime = (float)(node->m_event->RunningTime() + 1) * 1000000 / CLOCKS_PER_SEC * factor;
         ImGui::SameLine(startTime + reserveT);
         ImGui::Button(taskName.c_str(), ImVec2(runningTime, lineHeight));
     }

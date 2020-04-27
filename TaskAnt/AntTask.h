@@ -17,10 +17,10 @@ class AntTask {
     std::atomic<int> m_inDegree;
     std::shared_ptr<AntEvent> m_event;
 
-    std::shared_ptr<AntEvent> Setup(int);
-    void PrerequisitesComplete(int);
+    std::shared_ptr<AntEvent> Setup(const int&);
+    void PrerequisitesComplete(const int&);
     void ConditionalQueueTask();
-    void BeforeRun();
+    void BeforeRun(const int&);
     void AfterRun();
 
     friend class AntManager;

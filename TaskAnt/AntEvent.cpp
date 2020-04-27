@@ -13,7 +13,8 @@ bool AntEvent::TryAddSubsequent(AntTask* pTask) {
     return true;
 }
 
-void AntEvent::BeforeRun() {
+void AntEvent::BeforeRun(const int& antId) {
+    m_antId = antId;
     m_startTime = clock();
 }
 
@@ -23,6 +24,10 @@ void AntEvent::AfterRun(string name) {
     m_finished = true;
     m_finishPromise.set_value(0);
     for (auto task : m_subsequents) task->ConditionalQueueTask();
+}
+
+const int& AntEvent::AntId() const {
+    return m_antId;
 }
 
 const time_t& AntEvent::StartTime() const {

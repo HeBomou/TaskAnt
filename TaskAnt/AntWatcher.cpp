@@ -86,6 +86,8 @@ void AntWatcher::ImGuiRenderTick() {
     if (m_taskStateQueue.size() >= maxSize) {
         if (!m_pause && m_tasksToDisplayFrameNum != get<0>(m_taskStateQueue.front()))
             m_tasksToDisplay = get<2>(m_taskStateQueue.front());
+        // 根据AntId排序把相同线程的任务排在一起
+        sort(m_tasksToDisplay.begin(), m_tasksToDisplay.end(), [](TaskNode* a, TaskNode* b) { return a->m_event->AntId() < b->m_event->AntId(); });
         // 让渲染固定慢几帧
         while (m_taskStateQueue.size() > maxSize) m_taskStateQueue.pop_front();
     } else

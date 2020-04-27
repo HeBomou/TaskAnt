@@ -7,7 +7,7 @@
 
 namespace TaskAnt {
 
-Ant::Ant() {}
+Ant::Ant(const int& id) : m_id(id) {}
 
 Ant::~Ant() {}
 
@@ -15,7 +15,7 @@ void Ant::Run() {
     while (!m_killed) {
         auto pTask = AntManager::GetInstance()->GetNextTask();
         if (pTask) {
-            pTask->BeforeRun();
+            pTask->BeforeRun(m_id);
             pTask->m_proc();
             pTask->AfterRun();
             delete pTask;

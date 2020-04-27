@@ -126,18 +126,25 @@ void AntWatcher::ImGuiRenderTick() {
     // TODO: 显示时间线
     ImGui::Begin("Timeline");
 
-    long offsetT = INT_MAX;
+    int reserveT = 50;
+    int lineHeight = 40;
+    float factor = 0.5f;
+    long minT = INT_MAX;
     for (auto node : m_tasksToDisplay)
-        offsetT = min(offsetT, node->m_event->StartTime());
-    int reserveT = 85;
-    int lineHeight = 75;
+        minT = min(minT, node->m_event->StartTime());
+    minT *= factor;
 
-    ImGui::Button("Core unknown", ImVec2(reserveT, lineHeight));
+    int preAntId = -1;
+
     for (auto node : m_tasksToDisplay) {
+        if (node->m_event->AntId() != preAntId) {
+            preAntId = node->m_event->AntId();
+            ImGui::Button(("Ant " + to_string(preAntId)).c_str(), ImVec2(reserveT, lineHeight));
+        }
         const string& taskName = node->m_title;
-        const time_t& startTime = node->m_event->StartTime();
-        const time_t& runningTime = node->m_event->RunningTime();
-        ImGui::SameLine(startTime - offsetT + reserveT);
+        const time_t& startTime = node->m_event->StartTime() * factor;
+        const time_t& runningTime = node->m_event->RunningTime() * factor;
+        ImGui::SameLine(startTime - minT + reserveT);
         ImGui::Button(taskName.c_str(), ImVec2(runningTime, lineHeight));
     }
 

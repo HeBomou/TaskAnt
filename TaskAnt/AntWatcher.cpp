@@ -3,6 +3,9 @@
 #include <imgui.h>
 #include <imnodes.h>
 
+#define LAY_IMPLEMENTATION
+#include <layout.h>
+
 #include <map>
 
 #include "AntEvent.h"
